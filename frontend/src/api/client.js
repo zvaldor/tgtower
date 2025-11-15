@@ -1,5 +1,9 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
+// Debug: log API URL
+console.log('[API Client] Using API URL:', API_URL);
+console.log('[API Client] Environment:', import.meta.env);
+
 /**
  * Telegram WebApp API wrapper
  */
