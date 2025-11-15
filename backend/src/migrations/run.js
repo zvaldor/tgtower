@@ -1,0 +1,114 @@
+import pool from '../config/database.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const migrations = [
+  // Migration 1: Create users table
+  `CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    telegram_id BIGINT UNIQUE NOT NULL,
+    telegram_username TEXT,
+    telegram_first_name TEXT,
+    blocks_balance INT DEFAULT 0,
+    total_blocks_placed INT DEFAULT 0,
+    total_stars_spent INT DEFAULT 0,
+    total_stars_won INT DEFAULT 0,
+    referred_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 2: Create seasons table
+  `CREATE TABLE IF NOT EXISTS seasons (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    season_number INT UNIQUE NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    total_pool INT DEFAULT 0,
+    total_blocks INT DEFAULT 0,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'ended', 'distributing', 'completed')),
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 3: Create towers table
+  `CREATE TABLE IF NOT EXISTS towers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) NOT NULL,
+    season_id UUID REFERENCES seasons(id) NOT NULL,
+    height INT DEFAULT 0,
+    is_collapsed BOOLEAN DEFAULT false,
+    collapse_height INT,
+    final_payout INT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, season_id)
+  );`,
+
+  // Migration 4: Create blocks table
+  `CREATE TABLE IF NOT EXISTS blocks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tower_id UUID REFERENCES towers(id) NOT NULL,
+    block_number INT NOT NULL,
+    was_fatal BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 5: Create activity_feed table
+  `CREATE TABLE IF NOT EXISTS activity_feed (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) NOT NULL,
+    season_id UUID REFERENCES seasons(id) NOT NULL,
+    action TEXT NOT NULL CHECK (action IN ('block_placed', 'tower_collapsed', 'payout_claimed')),
+    height INT,
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 6: Create special_offers table
+  `CREATE TABLE IF NOT EXISTS special_offers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) NOT NULL,
+    offer_type TEXT NOT NULL,
+    blocks_amount INT NOT NULL,
+    stars_price INT NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    is_claimed BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 7: Create indexes
+  `CREATE INDEX IF NOT EXISTS idx_users_telegram_id ON users(telegram_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_seasons_status ON seasons(status);`,
+  `CREATE INDEX IF NOT EXISTS idx_towers_season_id ON towers(season_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_towers_user_id ON towers(user_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_activity_feed_season_id ON activity_feed(season_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_activity_feed_created_at ON activity_feed(created_at DESC);`,
+  `CREATE INDEX IF NOT EXISTS idx_special_offers_user_id ON special_offers(user_id);`,
+
+  // Migration 8: Insert initial season
+  `INSERT INTO seasons (season_number, start_time, end_time, status)
+   SELECT 1, NOW(), NOW() + INTERVAL '5 days', 'active'
+   WHERE NOT EXISTS (SELECT 1 FROM seasons WHERE season_number = 1);`,
+];
+
+async function runMigrations() {
+  const client = await pool.connect();
+
+  try {
+    console.log('Starting database migrations...');
+
+    for (let i = 0; i < migrations.length; i++) {
+      console.log(`Running migration ${i + 1}/${migrations.length}...`);
+      await client.query(migrations[i]);
+    }
+
+    console.log('All migrations completed successfully!');
+  } catch (error) {
+    console.error('Migration failed:', error);
+    throw error;
+  } finally {
+    client.release();
+    await pool.end();
+  }
+}
+
+runMigrations();

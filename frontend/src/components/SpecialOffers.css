@@ -1,0 +1,84 @@
+.special-offers {
+  padding: 20px 0;
+}
+
+.offers-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.offer-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.offer-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+}
+
+.offer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: white;
+}
+
+.offer-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.offer-description {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.offer-price {
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.offer-expires {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.offer-button {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: white;
+  color: var(--accent-green);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}

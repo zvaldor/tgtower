@@ -1,0 +1,35 @@
+.action-button-container {
+  padding: 20px 0;
+}
+
+.action-button {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 16px;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: var(--shadow-lg);
+}
+
+.action-button.button-primary {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  color: white;
+}
+
+.action-button.button-danger {
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-orange));
+  color: white;
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
