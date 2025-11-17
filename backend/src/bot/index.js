@@ -167,6 +167,34 @@ bot.on('callback_query', async (query) => {
       }
 
       const season = await getActiveSeason();
+      const tower = await getOrCreateTower(user.id, season.id);
+
+      // Check if tower is already collapsed
+      if (tower.is_collapsed) {
+        const timeUntilNewSeason = new Date(season.end_time) - new Date();
+        const hoursLeft = Math.floor(timeUntilNewSeason / (1000 * 60 * 60));
+        const minutesLeft = Math.floor((timeUntilNewSeason % (1000 * 60 * 60)) / (1000 * 60));
+
+        const collapsedMessage = `💥 Your tower has already collapsed this season!
+
+📊 Final Stats:
+  Height reached: ${tower.collapse_height || tower.height} blocks
+
+⏳ New season starts in: ${hoursLeft}h ${minutesLeft}m
+
+Come back then to build a new tower! 🏗️`;
+
+        await bot.sendMessage(chatId, collapsedMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+            ],
+          },
+        });
+
+        await bot.answerCallbackQuery(query.id);
+        return;
+      }
 
       // Check if user has blocks in balance
       if (user.blocks_balance > 0) {
@@ -344,6 +372,35 @@ bot.on('successful_payment', async (msg) => {
     if (payload.type === 'single_block') {
       // Place block immediately
       const season = await getActiveSeason();
+      const tower = await getOrCreateTower(user.id, season.id);
+
+      // Check if tower is already collapsed
+      if (tower.is_collapsed) {
+        const timeUntilNewSeason = new Date(season.end_time) - new Date();
+        const hoursLeft = Math.floor(timeUntilNewSeason / (1000 * 60 * 60));
+        const minutesLeft = Math.floor((timeUntilNewSeason % (1000 * 60 * 60)) / (1000 * 60));
+
+        const collapsedMessage = `💥 Your tower has already collapsed this season!
+
+Payment received, but you cannot place blocks on a collapsed tower.
+
+📊 Final Stats:
+  Height reached: ${tower.collapse_height || tower.height} blocks
+
+⏳ New season starts in: ${hoursLeft}h ${minutesLeft}m
+
+Your Stars will be refunded automatically. 💫`;
+
+        await bot.sendMessage(chatId, collapsedMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+            ],
+          },
+        });
+        return;
+      }
+
       const result = await placeBlock(user.id, season.id, true);
       const potentialPayout = await calculatePotentialPayout(user.id, season.id);
 
