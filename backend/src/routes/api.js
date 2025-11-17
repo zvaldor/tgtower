@@ -51,4 +51,25 @@ router.post('/create-invoice', async (req, res) => {
  */
 router.post('/claim-payout', claimPayoutHandler);
 
+/**
+ * POST /api/admin/end-season
+ * Force end current season and start new one (admin only)
+ */
+router.post('/admin/end-season', async (req, res) => {
+  try {
+    const { endSeasonAndCreateNext } = await import('../services/seasonService.js');
+
+    console.log('[ADMIN] Force ending current season...');
+    await endSeasonAndCreateNext();
+
+    res.json({
+      success: true,
+      message: 'Season ended and new season created successfully'
+    });
+  } catch (error) {
+    console.error('[ADMIN] Error ending season:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
