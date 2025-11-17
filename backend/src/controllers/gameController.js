@@ -10,6 +10,7 @@ import {
 import { getActivityFeed } from '../services/activityService.js';
 import { getActiveOffers } from '../services/offerService.js';
 import { calculateCollapseChance } from '../services/gameLogic.js';
+import bot from '../bot/index.js';
 
 /**
  * Get complete game state for user
@@ -52,6 +53,10 @@ export async function getGameState(req, res) {
     // Get special offers
     const specialOffers = await getActiveOffers(user.id);
 
+    // Get bot username for referral links
+    const botInfo = await bot.getMe();
+    const botUsername = botInfo.username;
+
     res.json({
       server_time: new Date().toISOString(),
       user: {
@@ -78,6 +83,7 @@ export async function getGameState(req, res) {
         potential_payout: potentialPayout,
         next_block_collapse_chance: nextBlockCollapseChance,
       },
+      bot_username: botUsername,
       special_offers: specialOffers,
       leaderboard,
       activity_feed: activityFeed,

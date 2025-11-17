@@ -6,6 +6,7 @@ import ActionButton from './components/ActionButton';
 import SpecialOffers from './components/SpecialOffers';
 import ActivityFeed from './components/ActivityFeed';
 import Leaderboard from './components/Leaderboard';
+import ReferralButton from './components/ReferralButton';
 import './App.css';
 
 export default function App() {
@@ -192,9 +193,14 @@ export default function App() {
           <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
         )}
 
-        <ActivityFeed activities={gameState.activity_feed || []} />
-
         <Leaderboard leaderboard={gameState.leaderboard || []} />
+
+        <ReferralButton
+          userId={gameState.user.telegram_id}
+          botUsername={gameState.bot_username}
+        />
+
+        <ActivityFeed activities={gameState.activity_feed || []} />
       </div>
     </div>
   );
