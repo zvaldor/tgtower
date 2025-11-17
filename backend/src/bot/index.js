@@ -243,30 +243,20 @@ Come back then to build a new tower! 🏗️`;
           });
         }
       } else {
-        // No balance - send invoice directly (no separate message)
-        await bot.sendInvoice(
-          chatId,
+        // No balance - create invoice link and open it directly
+        const invoiceLink = await bot.createInvoiceLink(
           'Place 1 Block',
-          'No blocks in balance. Pay 10 Stars to place a block on your tower.',
+          'Pay 10 Stars to place a block on your tower',
           JSON.stringify({ type: 'single_block' }),
           '', // provider_token (empty for Stars)
           'XTR', // currency (Telegram Stars)
-          [{ label: 'Place Block', amount: 10 }],
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: '💰 Pay 10 Stars',
-                    pay: true,
-                  },
-                ],
-              ],
-            },
-          }
+          [{ label: 'Place Block', amount: 10 }]
         );
 
-        await bot.answerCallbackQuery(query.id);
+        // Open payment directly without sending message
+        await bot.answerCallbackQuery(query.id, {
+          url: invoiceLink,
+        });
         return;
       }
 
