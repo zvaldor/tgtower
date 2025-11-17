@@ -8,8 +8,8 @@ import { claimOffer } from '../services/offerService.js';
 
 dotenv.config();
 
-// Initialize bot without polling (we'll use webhooks)
-const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: false });
+// Initialize bot with polling (temporary until webhook is properly configured)
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 /**
  * /start command - Register user and show welcome message

@@ -71,9 +71,9 @@ app.listen(PORT, async () => {
   console.log(`📡 Bot username: @${process.env.BOT_TOKEN?.split(':')[0] || 'unknown'}`);
   console.log(`🌐 WebApp URL: ${process.env.WEBAPP_URL}`);
 
-  // Set up webhook
-  const webhookUrl = process.env.WEBHOOK_URL || `https://tgtower-production.up.railway.app`;
-  await setupWebhook(webhookUrl);
+  // Webhook setup disabled - using polling mode
+  // const webhookUrl = process.env.WEBHOOK_URL || `https://tgtower-production.up.railway.app`;
+  // await setupWebhook(webhookUrl);
 
   // Initialize cron jobs
   initializeCronJobs();
