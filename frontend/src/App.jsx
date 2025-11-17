@@ -79,11 +79,10 @@ export default function App() {
           if (status === 'paid') {
             telegramWebApp.hapticFeedback('heavy');
             loadGameState();
-          } else if (status === 'cancelled') {
-            telegramWebApp.showAlert('Payment cancelled');
           } else if (status === 'failed') {
             telegramWebApp.showAlert('Payment failed. Please try again.');
           }
+          // Don't show alert for 'cancelled' status
         });
       }
     } catch (err) {
@@ -108,11 +107,10 @@ export default function App() {
           telegramWebApp.hapticFeedback('heavy');
           telegramWebApp.showAlert('Blocks added to your balance!');
           loadGameState();
-        } else if (status === 'cancelled') {
-          telegramWebApp.showAlert('Payment cancelled');
         } else if (status === 'failed') {
           telegramWebApp.showAlert('Payment failed. Please try again.');
         }
+        // Don't show alert for 'cancelled' status
       });
     } catch (err) {
       console.error('Failed to buy offer:', err);
