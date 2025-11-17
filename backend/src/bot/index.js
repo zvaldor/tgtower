@@ -31,7 +31,7 @@ bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
     // Create or get user
     const user = await getOrCreateUser(telegramId, username, firstName, referredByTelegramId);
 
-    const welcomeMessage = `Welcome to Tower Gamble! 🏗️
+    const welcomeMessage = `Welcome to Tower Build! 🏗️
 
 Build your tower, risk it all, win big!
 
@@ -136,7 +136,7 @@ ${referralLink}`;
           [
             {
               text: '📤 Share Link',
-              url: `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Tower Gamble! Build towers and win prizes! 🏗️⭐️')}`,
+              url: `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Tower Build! Build towers and win prizes! 🏗️⭐️')}`,
             },
           ],
         ],
@@ -293,7 +293,7 @@ ${referralLink}`;
             [
               {
                 text: '📤 Share Link',
-                url: `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Tower Gamble! Build towers and win prizes! 🏗️⭐️')}`,
+                url: `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Tower Build! Build towers and win prizes! 🏗️⭐️')}`,
               },
             ],
           ],

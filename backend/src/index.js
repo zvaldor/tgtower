@@ -53,7 +53,7 @@ app.get('/health', (req, res) => {
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    name: 'Tower Gamble API',
+    name: 'Tower Build API',
     version: '1.0.0',
     status: 'running',
   });

@@ -1,7 +1,7 @@
 {
-  "name": "tower-gamble-backend",
+  "name": "tower-build-backend",
   "version": "1.0.0",
-  "description": "Backend for Tower Gamble Telegram Mini App",
+  "description": "Backend for Tower Build Telegram Mini App",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
