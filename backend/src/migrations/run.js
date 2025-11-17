@@ -100,6 +100,12 @@ const migrations = [
   `INSERT INTO seasons (season_number, start_time, end_time, status)
    SELECT 1, NOW(), NOW() + INTERVAL '5 days', 'active'
    WHERE NOT EXISTS (SELECT 1 FROM seasons WHERE season_number = 1);`,
+
+  // Migration 9: Alter towers table to allow NULL user_id (for shared tower)
+  `ALTER TABLE towers ALTER COLUMN user_id DROP NOT NULL;`,
+
+  // Migration 10: Drop old UNIQUE constraint on user_id, season_id if exists
+  `ALTER TABLE towers DROP CONSTRAINT IF EXISTS towers_user_id_season_id_key;`,
 ];
 
 async function runMigrations() {
