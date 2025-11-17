@@ -46,7 +46,6 @@ But be careful — each block increases collapse chance...
       reply_markup: {
         inline_keyboard: [
           [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
-          [{ text: '🧱 Place Block', callback_data: 'place_block' }],
         ],
       },
     });
@@ -218,7 +217,6 @@ Come back then to build a new tower! 🏗️`;
             reply_markup: {
               inline_keyboard: [
                 [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
-                [{ text: '🧱 Place Block', callback_data: 'place_block' }],
               ],
             },
           });
@@ -237,26 +235,23 @@ Come back then to build a new tower! 🏗️`;
             reply_markup: {
               inline_keyboard: [
                 [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
-                [{ text: '🧱 Place Block', callback_data: 'place_block' }],
               ],
             },
           });
         }
       } else {
-        // No balance - create invoice link and open it directly
-        const invoiceLink = await bot.createInvoiceLink(
-          'Place 1 Block',
-          'Pay 10 Stars to place a block on your tower',
+        // No balance - send invoice directly
+        await bot.sendInvoice(
+          chatId,
+          '🧱 Place 1 Block',
+          'Pay 10 Stars',
           JSON.stringify({ type: 'single_block' }),
           '', // provider_token (empty for Stars)
           'XTR', // currency (Telegram Stars)
           [{ label: 'Place Block', amount: 10 }]
         );
 
-        // Open payment directly without sending message
-        await bot.answerCallbackQuery(query.id, {
-          url: invoiceLink,
-        });
+        await bot.answerCallbackQuery(query.id);
         return;
       }
 
@@ -419,7 +414,6 @@ Your Stars will be refunded automatically. 💫`;
           reply_markup: {
             inline_keyboard: [
               [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
-              [{ text: '🧱 Place Block', callback_data: 'place_block' }],
             ],
           },
         });
@@ -437,7 +431,6 @@ Your Stars will be refunded automatically. 💫`;
           reply_markup: {
             inline_keyboard: [
               [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
-              [{ text: '🧱 Place Block', callback_data: 'place_block' }],
             ],
           },
         });
