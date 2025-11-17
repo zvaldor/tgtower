@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
-import { getOrCreateUser, getUserByTelegramId, updateUserBalance } from '../services/userService.js';
+import { getOrCreateUser, getUserByTelegramId } from '../services/userService.js';
 import { getActiveSeason } from '../services/seasonService.js';
 import { getOrCreateTower, calculatePotentialPayout, placeBlock } from '../services/towerService.js';
 import { parseReferralCode } from '../services/gameLogic.js';
