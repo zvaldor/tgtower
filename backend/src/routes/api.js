@@ -37,7 +37,7 @@ router.post('/create-invoice', async (req, res) => {
 
     res.json({
       success: true,
-      invoice_message_id: result.invoice_message_id,
+      invoice_link: result.invoice_link,
     });
   } catch (error) {
     console.error('Error in create-invoice:', error);

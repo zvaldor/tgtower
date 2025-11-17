@@ -72,13 +72,19 @@ export default function App() {
       } else {
         // Create invoice for Stars payment
         telegramWebApp.hapticFeedback('light');
-        await apiClient.createInvoice('single_block');
+        const invoiceData = await apiClient.createInvoice('single_block');
 
-        // Show message and reload after payment
-        telegramWebApp.showAlert('Invoice sent! Complete payment to place block.');
-
-        // Reload game state after a short delay
-        setTimeout(loadGameState, 2000);
+        // Open invoice directly in WebApp
+        telegramWebApp.openInvoice(invoiceData.invoice_link, (status) => {
+          if (status === 'paid') {
+            telegramWebApp.hapticFeedback('heavy');
+            loadGameState();
+          } else if (status === 'cancelled') {
+            telegramWebApp.showAlert('Payment cancelled');
+          } else if (status === 'failed') {
+            telegramWebApp.showAlert('Payment failed. Please try again.');
+          }
+        });
       }
     } catch (err) {
       console.error('Failed to place block:', err);
@@ -94,12 +100,20 @@ export default function App() {
       telegramWebApp.hapticFeedback('medium');
 
       // Create invoice for block pack
-      await apiClient.createInvoice('block_pack', offer.blocks_amount, offer.id);
+      const invoiceData = await apiClient.createInvoice('block_pack', offer.blocks_amount, offer.id);
 
-      telegramWebApp.showAlert('Invoice sent! Complete payment to receive blocks.');
-
-      // Reload game state after a short delay
-      setTimeout(loadGameState, 2000);
+      // Open invoice directly in WebApp
+      telegramWebApp.openInvoice(invoiceData.invoice_link, (status) => {
+        if (status === 'paid') {
+          telegramWebApp.hapticFeedback('heavy');
+          telegramWebApp.showAlert('Blocks added to your balance!');
+          loadGameState();
+        } else if (status === 'cancelled') {
+          telegramWebApp.showAlert('Payment cancelled');
+        } else if (status === 'failed') {
+          telegramWebApp.showAlert('Payment failed. Please try again.');
+        }
+      });
     } catch (err) {
       console.error('Failed to buy offer:', err);
       telegramWebApp.showAlert(`Error: ${err.message}`);

@@ -62,6 +62,21 @@ class TelegramWebApp {
       }
     });
   }
+
+  /**
+   * Open Telegram Stars invoice directly in WebApp
+   */
+  openInvoice(invoiceLink, callback) {
+    if (this.tg?.openInvoice) {
+      this.tg.openInvoice(invoiceLink, (status) => {
+        // status can be: 'paid', 'cancelled', 'failed', 'pending'
+        if (callback) callback(status);
+      });
+    } else {
+      // Fallback: open in new window
+      window.open(invoiceLink, '_blank');
+    }
+  }
 }
 
 export const telegramWebApp = new TelegramWebApp();

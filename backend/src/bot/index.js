@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
-import { getOrCreateUser, getUserByTelegramId } from '../services/userService.js';
+import { getOrCreateUser, getUserByTelegramId, updateUserBalance } from '../services/userService.js';
 import { getActiveSeason } from '../services/seasonService.js';
 import { getOrCreateTower, calculatePotentialPayout, placeBlock } from '../services/towerService.js';
 import { parseReferralCode } from '../services/gameLogic.js';
@@ -8,7 +8,8 @@ import { claimOffer } from '../services/offerService.js';
 
 dotenv.config();
 
-const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+// Initialize bot without polling (we'll use webhooks)
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: false });
 
 /**
  * /start command - Register user and show welcome message
@@ -39,15 +40,13 @@ The higher you go, the bigger your share of the prize pool!
 
 But be careful — each block increases collapse chance...
 
-🎯 Special newcomer offer: 50 blocks for only 475 Stars!
-(Expires in 3 days)`;
+🎒 Your Balance: ${user.blocks_balance} blocks`;
 
     await bot.sendMessage(chatId, welcomeMessage, {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🎮 Play Now', web_app: { url: process.env.WEBAPP_URL } }],
-          [{ text: '📊 Stats', callback_data: 'stats' }],
-          [{ text: '🎁 Referral', callback_data: 'referral' }],
+          [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+          [{ text: '🧱 Place Block', callback_data: 'place_block' }],
         ],
       },
     });
@@ -155,11 +154,85 @@ ${referralLink}`;
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
+  const telegramId = query.from.id;
 
   try {
-    if (data === 'stats') {
+    if (data === 'place_block') {
+      // Place block directly
+      const user = await getUserByTelegramId(telegramId);
+
+      if (!user) {
+        await bot.answerCallbackQuery(query.id, { text: 'Please start the bot first with /start' });
+        return;
+      }
+
+      const season = await getActiveSeason();
+
+      // Check if user has blocks in balance
+      if (user.blocks_balance > 0) {
+        // Use balance block
+        const result = await placeBlock(user.id, season.id, false);
+
+        const tower = await getOrCreateTower(user.id, season.id);
+        const potentialPayout = await calculatePotentialPayout(user.id, season.id);
+
+        if (result.collapsed) {
+          const analyticsMessage = `💥 Oh no! Your tower collapsed at height ${result.height}!
+
+📊 Analytics:
+  Final height: ${result.height} blocks
+  Collapse chance was: ${(result.collapse_chance * 100).toFixed(2)}%
+
+🎒 Balance: ${user.blocks_balance - 1} blocks
+💰 Season prize pool: ${season.total_pool} Stars`;
+
+          await bot.sendMessage(chatId, analyticsMessage, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+                [{ text: '🧱 Place Block', callback_data: 'place_block' }],
+              ],
+            },
+          });
+        } else {
+          const analyticsMessage = `✅ Block placed successfully!
+
+📊 Analytics:
+  Current height: ${result.height} blocks
+  Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
+  Potential payout: ${potentialPayout} Stars
+
+🎒 Balance: ${user.blocks_balance - 1} blocks
+💰 Season prize pool: ${season.total_pool} Stars`;
+
+          await bot.sendMessage(chatId, analyticsMessage, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+                [{ text: '🧱 Place Block', callback_data: 'place_block' }],
+              ],
+            },
+          });
+        }
+      } else {
+        // No balance - charge Stars immediately
+        const invoice = await bot.sendInvoice(
+          chatId,
+          'Place 1 Block',
+          'Add 1 block to your tower',
+          JSON.stringify({ type: 'single_block' }),
+          '', // provider_token (empty for Stars)
+          'XTR', // currency (Telegram Stars)
+          [{ label: 'Place 1 Block', amount: 10 }]
+        );
+
+        await bot.answerCallbackQuery(query.id, { text: 'Payment required' });
+        return;
+      }
+
+      await bot.answerCallbackQuery(query.id);
+    } else if (data === 'stats') {
       // Simulate /stats command
-      const telegramId = query.from.id;
       const user = await getUserByTelegramId(telegramId);
 
       if (!user) {
@@ -197,7 +270,6 @@ bot.on('callback_query', async (query) => {
       });
     } else if (data === 'referral') {
       // Simulate /referral command
-      const telegramId = query.from.id;
       const user = await getUserByTelegramId(telegramId);
 
       if (!user) {
@@ -273,17 +345,43 @@ bot.on('successful_payment', async (msg) => {
       // Place block immediately
       const season = await getActiveSeason();
       const result = await placeBlock(user.id, season.id, true);
+      const potentialPayout = await calculatePotentialPayout(user.id, season.id);
 
       if (result.collapsed) {
-        await bot.sendMessage(
-          chatId,
-          `💥 Oh no! Your tower collapsed at height ${result.height}!\n\nBetter luck next time!`
-        );
+        const analyticsMessage = `💥 Oh no! Your tower collapsed at height ${result.height}!
+
+📊 Analytics:
+  Final height: ${result.height} blocks
+  Collapse chance was: ${(result.collapse_chance * 100).toFixed(2)}%
+
+💰 Season prize pool: ${season.total_pool} Stars`;
+
+        await bot.sendMessage(chatId, analyticsMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+              [{ text: '🧱 Place Block', callback_data: 'place_block' }],
+            ],
+          },
+        });
       } else {
-        await bot.sendMessage(
-          chatId,
-          `✅ Block placed successfully!\n\nYour tower is now ${result.height} blocks tall.\nNext block collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%`
-        );
+        const analyticsMessage = `✅ Block placed successfully!
+
+📊 Analytics:
+  Current height: ${result.height} blocks
+  Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
+  Potential payout: ${potentialPayout} Stars
+
+💰 Season prize pool: ${season.total_pool} Stars`;
+
+        await bot.sendMessage(chatId, analyticsMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🎮 Open App', web_app: { url: process.env.WEBAPP_URL } }],
+              [{ text: '🧱 Place Block', callback_data: 'place_block' }],
+            ],
+          },
+        });
       }
     } else if (payload.type === 'block_pack') {
       // Claim offer (adds blocks to balance)
@@ -302,6 +400,7 @@ bot.on('successful_payment', async (msg) => {
 
 /**
  * Create invoice for Stars payment
+ * Returns invoice link for use in WebApp
  */
 export async function createInvoice(telegramId, type, amount = null, offerId = null) {
   let title, description, price, payload;
@@ -320,8 +419,8 @@ export async function createInvoice(telegramId, type, amount = null, offerId = n
     throw new Error('Invalid invoice type');
   }
 
-  const invoice = await bot.sendInvoice(
-    telegramId,
+  // Create invoice link for use in WebApp
+  const invoiceLink = await bot.createInvoiceLink(
     title,
     description,
     payload,
@@ -330,7 +429,28 @@ export async function createInvoice(telegramId, type, amount = null, offerId = n
     [{ label: title, amount: price }]
   );
 
-  return { invoice_message_id: invoice.message_id };
+  return { invoice_link: invoiceLink };
+}
+
+/**
+ * Set up webhook for the bot
+ */
+export async function setupWebhook(webhookUrl) {
+  try {
+    await bot.setWebHook(`${webhookUrl}/webhook/telegram`);
+    console.log('✅ Webhook set up successfully');
+    const webhookInfo = await bot.getWebHookInfo();
+    console.log('📡 Webhook info:', webhookInfo);
+  } catch (error) {
+    console.error('❌ Error setting up webhook:', error);
+  }
+}
+
+/**
+ * Process webhook update
+ */
+export function processUpdate(update) {
+  bot.processUpdate(update);
 }
 
 export default bot;
