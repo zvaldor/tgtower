@@ -3,16 +3,18 @@
 }
 
 .activity-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .activity-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .activity-empty {
@@ -25,16 +27,14 @@
 .activity-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+  gap: 10px;
+  padding: 0;
 }
 
 .activity-icon {
-  font-size: 24px;
+  font-size: 20px;
   flex-shrink: 0;
+  opacity: 0.8;
 }
 
 .activity-content {
@@ -45,12 +45,12 @@
 }
 
 .activity-text {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .activity-time {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-tertiary);
 }

@@ -3,34 +3,34 @@
 }
 
 .leaderboard-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .leaderboard-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .leaderboard-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+  padding: 0;
 }
 
 .leaderboard-rank {
-  font-size: 18px;
-  font-weight: 700;
-  width: 40px;
-  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  width: 32px;
+  text-align: left;
   color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .leaderboard-content {
@@ -41,8 +41,8 @@
 }
 
 .leaderboard-name {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
