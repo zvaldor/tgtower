@@ -53,6 +53,7 @@ export async function getGameState(req, res) {
     const specialOffers = await getActiveOffers(user.id);
 
     res.json({
+      server_time: new Date().toISOString(),
       user: {
         id: user.id,
         telegram_id: user.telegram_id,
@@ -116,6 +117,7 @@ export async function placeBlockHandler(req, res) {
 
     res.json({
       success: true,
+      server_time: new Date().toISOString(),
       collapsed: result.collapsed,
       height: result.height,
       collapse_chance: result.collapse_chance,

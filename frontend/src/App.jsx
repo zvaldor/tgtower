@@ -13,6 +13,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCollapsing, setIsCollapsing] = useState(false);
   const [error, setError] = useState(null);
+  const [timeOffset, setTimeOffset] = useState(0); // Server time - client time
 
   // Load game state on mount
   useEffect(() => {
@@ -25,12 +26,34 @@ export default function App() {
     // Apply theme
     const theme = telegramWebApp.tg?.colorScheme || 'light';
     document.documentElement.setAttribute('data-theme', theme);
+
+    // Handle app visibility change (resume from background)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // App resumed - sync time with server
+        loadGameState();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const loadGameState = async () => {
     try {
       setError(null);
       const data = await apiClient.getGameState();
+
+      // Sync time with server
+      if (data.server_time) {
+        const serverTime = new Date(data.server_time).getTime();
+        const clientTime = Date.now();
+        setTimeOffset(serverTime - clientTime);
+      }
+
       setGameState(data);
     } catch (err) {
       console.error('Failed to load game state:', err);
@@ -52,6 +75,13 @@ export default function App() {
         telegramWebApp.hapticFeedback('medium');
 
         const result = await apiClient.placeBlock();
+
+        // Sync time with server
+        if (result.server_time) {
+          const serverTime = new Date(result.server_time).getTime();
+          const clientTime = Date.now();
+          setTimeOffset(serverTime - clientTime);
+        }
 
         if (result.collapsed) {
           // Tower collapsed
@@ -147,7 +177,7 @@ export default function App() {
   return (
     <div className="app">
       <div className="container">
-        <Header season={gameState.season} user={gameState.user} />
+        <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
 
         <TowerDisplay tower={gameState.tower} isCollapsing={isCollapsing} />
 
