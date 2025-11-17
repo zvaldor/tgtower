@@ -1,9 +1,10 @@
 /**
  * Calculate collapse probability based on tower height
- * Formula: 1 - (0.99 ^ height)
+ * Formula: 1 - (0.9999 ^ height)
+ * Reduced by 100x from original 0.99 to make collapse much rarer
  */
 export function calculateCollapseChance(height) {
-  return 1 - Math.pow(0.99, height);
+  return 1 - Math.pow(0.9999, height);
 }
 
 /**

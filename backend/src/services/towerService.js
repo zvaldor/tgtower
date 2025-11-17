@@ -3,28 +3,28 @@ import { checkCollapse, calculateCollapseChance, calculatePayout } from './gameL
 import { updateSeasonStats, getTotalSurvivorHeight } from './seasonService.js';
 
 /**
- * Get or create tower for user in current season
+ * Get or create shared tower for season (one tower for all users)
  */
 export async function getOrCreateTower(userId, seasonId) {
   const client = await pool.connect();
 
   try {
-    // Try to find existing tower
+    // Try to find existing tower for this season (shared by all users)
     let result = await client.query(
-      'SELECT * FROM towers WHERE user_id = $1 AND season_id = $2',
-      [userId, seasonId]
+      'SELECT * FROM towers WHERE season_id = $1 AND user_id IS NULL',
+      [seasonId]
     );
 
     if (result.rows.length > 0) {
       return result.rows[0];
     }
 
-    // Create new tower
+    // Create new shared tower for the season
     result = await client.query(
       `INSERT INTO towers (user_id, season_id, height, is_collapsed)
-       VALUES ($1, $2, 0, false)
+       VALUES (NULL, $1, 0, false)
        RETURNING *`,
-      [userId, seasonId]
+      [seasonId]
     );
 
     return result.rows[0];
@@ -34,7 +34,7 @@ export async function getOrCreateTower(userId, seasonId) {
 }
 
 /**
- * Place a block on user's tower
+ * Place a block on shared tower
  */
 export async function placeBlock(userId, seasonId, paidWithStars = true) {
   const client = await pool.connect();
@@ -42,10 +42,10 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
   try {
     await client.query('BEGIN');
 
-    // Get tower
+    // Get shared tower for season
     const towerResult = await client.query(
-      'SELECT * FROM towers WHERE user_id = $1 AND season_id = $2',
-      [userId, seasonId]
+      'SELECT * FROM towers WHERE season_id = $1 AND user_id IS NULL',
+      [seasonId]
     );
 
     if (towerResult.rows.length === 0) {
@@ -92,6 +92,17 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
     );
 
     const blockId = blockResult.rows[0].id;
+
+    // Track user contribution
+    await client.query(
+      `INSERT INTO user_contributions (user_id, season_id, blocks_contributed)
+       VALUES ($1, $2, 1)
+       ON CONFLICT (user_id, season_id)
+       DO UPDATE SET
+         blocks_contributed = user_contributions.blocks_contributed + 1,
+         updated_at = NOW()`,
+      [userId, seasonId]
+    );
 
     // Check for collapse
     const collapsed = checkCollapse(newHeight);
@@ -210,19 +221,19 @@ export async function calculatePotentialPayout(userId, seasonId) {
 }
 
 /**
- * Get leaderboard for season
+ * Get leaderboard for season (based on user contributions)
  */
 export async function getLeaderboard(seasonId, limit = 100) {
   const result = await pool.query(
     `SELECT
        u.telegram_first_name,
        u.telegram_username,
-       t.height,
-       t.is_collapsed
-     FROM towers t
-     JOIN users u ON t.user_id = u.id
-     WHERE t.season_id = $1
-     ORDER BY t.height DESC, t.created_at ASC
+       uc.blocks_contributed as height,
+       false as is_collapsed
+     FROM user_contributions uc
+     JOIN users u ON uc.user_id = u.id
+     WHERE uc.season_id = $1
+     ORDER BY uc.blocks_contributed DESC, uc.created_at ASC
      LIMIT $2`,
     [seasonId, limit]
   );

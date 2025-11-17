@@ -30,15 +30,27 @@ const migrations = [
     created_at TIMESTAMP DEFAULT NOW()
   );`,
 
-  // Migration 3: Create towers table
+  // Migration 3: Create towers table (shared tower per season)
   `CREATE TABLE IF NOT EXISTS towers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) NOT NULL,
+    user_id UUID REFERENCES users(id),
     season_id UUID REFERENCES seasons(id) NOT NULL,
     height INT DEFAULT 0,
     is_collapsed BOOLEAN DEFAULT false,
     collapse_height INT,
     final_payout INT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 3.5: Create user_contributions table to track each user's contribution
+  `CREATE TABLE IF NOT EXISTS user_contributions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) NOT NULL,
+    season_id UUID REFERENCES seasons(id) NOT NULL,
+    blocks_contributed INT DEFAULT 0,
+    has_claimed_payout BOOLEAN DEFAULT false,
+    payout_amount INT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(user_id, season_id)
