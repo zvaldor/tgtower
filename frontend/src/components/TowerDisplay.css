@@ -56,21 +56,69 @@
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   width: 100%;
-  max-width: 200px;
-  min-height: 200px;
-  padding: 20px;
-  background: var(--bg-secondary);
+  max-width: 180px;
+  min-height: 300px;
+  padding: 20px 20px 30px;
+  background: linear-gradient(to bottom, #87ceeb 0%, #e0f6ff 50%, #90EE90 100%);
   border-radius: 16px;
   position: relative;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .block {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
+  width: 120px;
+  height: 24px;
+  border-radius: 2px;
   transform-origin: bottom;
+  position: relative;
+  background: linear-gradient(135deg,
+    #8B4513 0%,
+    #A0522D 25%,
+    #8B4513 50%,
+    #654321 75%,
+    #8B4513 100%);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+  border: 1px solid #654321;
+}
+
+.block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.1) 8px,
+    rgba(0,0,0,0.1) 9px
+  );
+  pointer-events: none;
+}
+
+.block::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 60%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(139,69,19,0.3),
+    rgba(139,69,19,0.3) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
 }
 
 .blocks-overflow {

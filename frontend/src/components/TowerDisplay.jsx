@@ -38,9 +38,6 @@ export default function TowerDisplay({ tower, isCollapsing }) {
                   initial={{ scaleY: 0, opacity: 0 }}
                   animate={{ scaleY: 1, opacity: 1 }}
                   transition={{ delay: index * 0.02, duration: 0.2 }}
-                  style={{
-                    background: `hsl(${200 + index * 5}, 70%, 60%)`,
-                  }}
                 />
               ))}
             </AnimatePresence>
