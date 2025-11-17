@@ -10,7 +10,7 @@ export default function Header({ season, user }) {
 
   return (
     <div className="header">
-      <div className="header-season">
+      <div className="header-row">
         <div className="season-info">
           <span className="season-label">Season {season.number}</span>
           <span className="season-time">
@@ -21,13 +21,12 @@ export default function Header({ season, user }) {
           <span className="pool-label">Prize Pool</span>
           <span className="pool-amount">{season.total_pool} ⭐️</span>
         </div>
-      </div>
-
-      <div className="header-balance">
-        <div className="balance-item">
-          <span className="balance-label">Your Blocks</span>
-          <span className="balance-value">{user.blocks_balance}</span>
-        </div>
+        {user.blocks_balance > 0 && (
+          <div className="balance-item">
+            <span className="balance-label">Your Blocks</span>
+            <span className="balance-value">{user.blocks_balance}</span>
+          </div>
+        )}
       </div>
     </div>
   );

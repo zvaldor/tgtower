@@ -2,18 +2,19 @@
   padding: 20px 0;
 }
 
-.header-season {
+.header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 8px 0;
-  margin-bottom: 16px;
 }
 
 .season-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 }
 
 .season-label {
@@ -31,7 +32,7 @@
 .prize-pool {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 2px;
 }
 
@@ -49,16 +50,10 @@
   background-clip: text;
 }
 
-.header-balance {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
 .balance-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 2px;
 }
 

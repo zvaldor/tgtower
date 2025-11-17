@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { getOrCreateUser, getUserByTelegramId } from '../services/userService.js';
 import { getActiveSeason } from '../services/seasonService.js';
 import { getOrCreateTower, calculatePotentialPayout, placeBlock } from '../services/towerService.js';
-import { parseReferralCode } from '../services/gameLogic.js';
+import { parseReferralCode, calculateCollapseChance } from '../services/gameLogic.js';
 import { claimOffer } from '../services/offerService.js';
 
 dotenv.config();
@@ -31,7 +31,12 @@ bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
     // Create or get user
     const user = await getOrCreateUser(telegramId, username, firstName, referredByTelegramId);
 
-    const welcomeMessage = `Welcome to Tower Build! 🏗️
+    // Check if user is new (just created)
+    const isNewUser = user.total_blocks_placed === 0;
+
+    let welcomeMessage;
+    if (isNewUser) {
+      welcomeMessage = `Welcome to Tower Build! 🏗️
 
 Build your tower, risk it all, win big!
 
@@ -41,6 +46,20 @@ The higher you go, the bigger your share of the prize pool!
 But be careful — each block increases collapse chance...
 
 🎒 Your Balance: ${user.blocks_balance} blocks`;
+    } else {
+      // Get tower and season info for returning users
+      const season = await getActiveSeason();
+      const tower = await getOrCreateTower(user.id, season.id);
+      const potentialPayout = await calculatePotentialPayout(user.id, season.id);
+      const collapseChance = calculateCollapseChance(tower.height + 1);
+
+      welcomeMessage = `Welcome back, builder! 🏗️
+
+🎒 Your Balance: ${user.blocks_balance} blocks
+📏 Current height: ${tower.height} blocks
+⚠️ Next collapse chance: ${(collapseChance * 100).toFixed(2)}%
+💰 Potential payout: ${potentialPayout} Stars`;
+    }
 
     await bot.sendMessage(chatId, welcomeMessage, {
       reply_markup: {
@@ -225,13 +244,11 @@ Come back then to build a new tower! 🏗️`;
         } else {
           const analyticsMessage = `✅ Block placed successfully!
 
-📊 Analytics:
-  Current height: ${result.height} blocks
-  Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
-  Potential payout: ${potentialPayout} Stars
+📏 Current height: ${result.height} blocks
+⚠️ Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
+💰 Potential payout: ${potentialPayout} Stars
 
-🎒 Balance: ${user.blocks_balance - 1} blocks
-💰 Season prize pool: ${season.total_pool} Stars`;
+🎒 Balance: ${user.blocks_balance - 1} blocks`;
 
           await bot.sendMessage(chatId, analyticsMessage, {
             reply_markup: {
@@ -424,12 +441,9 @@ Your Stars will be refunded automatically. 💫`;
       } else {
         const analyticsMessage = `✅ Block placed successfully!
 
-📊 Analytics:
-  Current height: ${result.height} blocks
-  Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
-  Potential payout: ${potentialPayout} Stars
-
-💰 Season prize pool: ${season.total_pool} Stars`;
+📏 Current height: ${result.height} blocks
+⚠️ Next collapse chance: ${(result.collapse_chance * 100).toFixed(2)}%
+💰 Potential payout: ${potentialPayout} Stars`;
 
         await bot.sendMessage(chatId, analyticsMessage, {
           reply_markup: {
