@@ -24,7 +24,21 @@ export async function getGameState(req, res) {
     }
 
     // Get or create user
-    const user = await getOrCreateUser(telegram_id, username, first_name);
+    const { user, isNewUser, referrerTelegramId } = await getOrCreateUser(telegram_id, username, first_name);
+
+    // If new user was referred, send notification to referrer
+    if (isNewUser && referrerTelegramId) {
+      try {
+        const referredUserName = first_name || username || 'Your friend';
+        await bot.sendMessage(
+          referrerTelegramId,
+          `🎉 Ура! ${referredUserName} теперь тоже строит башню!\n\n🎁 Награждаем тебя 1 бесплатным блоком!`
+        );
+      } catch (notificationError) {
+        console.error('Failed to send referral notification:', notificationError);
+        // Don't fail the request if notification fails
+      }
+    }
 
     // Get active season
     const season = await getActiveSeason();
@@ -106,7 +120,7 @@ export async function placeBlockHandler(req, res) {
     }
 
     // Get user
-    const user = await getOrCreateUser(telegram_id, username, first_name);
+    const { user } = await getOrCreateUser(telegram_id, username, first_name);
 
     // Get active season
     const season = await getActiveSeason();
@@ -147,7 +161,7 @@ export async function claimPayoutHandler(req, res) {
     }
 
     // Get user
-    const user = await getOrCreateUser(telegram_id);
+    const { user } = await getOrCreateUser(telegram_id);
 
     // Claim payout
     const result = await claimPayout(user.id, season_id);

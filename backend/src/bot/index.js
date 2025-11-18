@@ -29,9 +29,21 @@ bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
     }
 
     // Create or get user
-    const user = await getOrCreateUser(telegramId, username, firstName, referredByTelegramId);
+    const { user, isNewUser: justCreated, referrerTelegramId } = await getOrCreateUser(telegramId, username, firstName, referredByTelegramId);
 
-    // Check if user is new (just created)
+    // Send notification to referrer if this is a new referred user
+    if (justCreated && referrerTelegramId) {
+      try {
+        await bot.sendMessage(
+          referrerTelegramId,
+          `🎉 Ура! ${firstName} теперь тоже строит башню!\n\n🎁 Награждаем тебя 1 бесплатным блоком!`
+        );
+      } catch (notificationError) {
+        console.error('Failed to send referral notification:', notificationError);
+      }
+    }
+
+    // Check if user is new (just created or no blocks placed yet)
     const isNewUser = user.total_blocks_placed === 0;
 
     let welcomeMessage;

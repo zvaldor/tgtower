@@ -17,19 +17,21 @@ export async function getOrCreateUser(telegramId, username, firstName, referredB
 
     if (result.rows.length > 0) {
       await client.query('COMMIT');
-      return result.rows[0];
+      return { user: result.rows[0], isNewUser: false, referrerTelegramId: null };
     }
 
     // Create new user
     let referrerId = null;
+    let referrerTelegramId = null;
     if (referredByTelegramId) {
       const referrerResult = await client.query(
-        'SELECT id FROM users WHERE telegram_id = $1',
+        'SELECT id, telegram_id FROM users WHERE telegram_id = $1',
         [referredByTelegramId]
       );
 
       if (referrerResult.rows.length > 0) {
         referrerId = referrerResult.rows[0].id;
+        referrerTelegramId = referrerResult.rows[0].telegram_id;
 
         // Give referrer +1 block bonus
         await client.query(
@@ -57,7 +59,7 @@ export async function getOrCreateUser(telegramId, username, firstName, referredB
     );
 
     await client.query('COMMIT');
-    return newUser;
+    return { user: newUser, isNewUser: true, referrerTelegramId };
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;
