@@ -51,3 +51,24 @@
   font-weight: 600;
   color: var(--accent-blue);
 }
+
+.leaderboard-heights {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.height-regular,
+.height-premium {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.height-regular {
+  color: var(--accent-blue);
+}
+
+.height-premium {
+  color: #7b68ee;
+}

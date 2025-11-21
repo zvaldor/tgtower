@@ -129,6 +129,30 @@ class ApiClient {
   }
 
   /**
+   * Place a premium block using premium balance
+   */
+  async placePremiumBlock() {
+    const userData = telegramWebApp.getUserData();
+
+    return this.request('/api/place-premium-block', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  /**
+   * Mark onboarding as shown
+   */
+  async markOnboardingShown() {
+    const userData = telegramWebApp.getUserData();
+
+    return this.request('/api/mark-onboarding-shown', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  /**
    * Create Telegram Stars invoice
    */
   async createInvoice(type, amount = null, offerId = null) {

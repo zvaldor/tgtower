@@ -25,6 +25,12 @@
   color: white;
 }
 
+.action-button.button-premium {
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  color: white;
+  box-shadow: 0 0 20px rgba(123, 104, 238, 0.3);
+}
+
 .action-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;

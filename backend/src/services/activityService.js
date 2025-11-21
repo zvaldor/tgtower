@@ -8,7 +8,9 @@ export async function getActivityFeed(seasonId, limit = 5) {
     `SELECT
        af.action,
        af.height,
+       af.tower_type,
        af.created_at,
+       u.telegram_id,
        u.telegram_first_name,
        u.telegram_username
      FROM activity_feed af
