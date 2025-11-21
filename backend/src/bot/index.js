@@ -467,12 +467,32 @@ Your Stars will be refunded automatically. 💫`;
         });
       }
     } else if (payload.type === 'block_pack') {
-      // Claim offer (adds blocks to balance)
-      await claimOffer(user.id, payload.offer_id);
+      // Add blocks to balance
+      const blocksAmount = payload.amount || 0;
+
+      if (!blocksAmount) {
+        throw new Error('Invalid blocks amount in payment');
+      }
+
+      // Try to claim offer if offer_id is provided
+      if (payload.offer_id) {
+        try {
+          await claimOffer(user.id, payload.offer_id);
+        } catch (offerError) {
+          // If offer claim fails (already claimed, expired, etc.), add blocks directly
+          console.warn('Failed to claim offer, adding blocks directly:', offerError.message);
+          const { updateUserBlocksBalance } = await import('../services/userService.js');
+          await updateUserBlocksBalance(user.id, blocksAmount);
+        }
+      } else {
+        // No offer_id, add blocks directly
+        const { updateUserBlocksBalance } = await import('../services/userService.js');
+        await updateUserBlocksBalance(user.id, blocksAmount);
+      }
 
       await bot.sendMessage(
         chatId,
-        `✅ Pack purchased successfully!\n\n+${payload.amount} blocks added to your balance!`
+        `✅ Pack purchased successfully!\n\n+${blocksAmount} blocks added to your balance!`
       );
     }
   } catch (error) {
