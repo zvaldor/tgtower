@@ -278,11 +278,6 @@ export default function App() {
             {gameState.special_offers && gameState.special_offers.length > 0 && (
               <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
             )}
-
-            <ReferralButton
-              userId={gameState.user.telegram_id}
-              botUsername={gameState.bot_username}
-            />
           </div>
         </div>
 
@@ -293,6 +288,11 @@ export default function App() {
             <Leaderboard
               leaderboard={gameState.leaderboard || []}
               premiumLeaderboard={gameState.premium_leaderboard || []}
+            />
+
+            <ReferralButton
+              userId={gameState.user.telegram_id}
+              botUsername={gameState.bot_username}
             />
           </div>
         </div>
