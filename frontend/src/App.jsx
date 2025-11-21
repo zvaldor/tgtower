@@ -28,6 +28,11 @@ export default function App() {
     telegramWebApp.expand();
     telegramWebApp.ready();
 
+    // Disable vertical swipes to prevent closing the app
+    if (telegramWebApp.tg?.disableVerticalSwipes) {
+      telegramWebApp.tg.disableVerticalSwipes();
+    }
+
     // Apply theme
     const theme = telegramWebApp.tg?.colorScheme || 'light';
     document.documentElement.setAttribute('data-theme', theme);

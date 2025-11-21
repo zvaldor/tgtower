@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TowerDisplay.css';
 
-export default function TowerDisplay({ tower, isCollapsing, isPremium = false, towerIcon = '🪵' }) {
+export default function TowerDisplay({ tower, isCollapsing, isPremium = false, towerName = 'Wooden Tower' }) {
   const maxBlocksToShow = 20;
   const blocksToShow = Math.min(tower.height, maxBlocksToShow);
 
@@ -21,13 +21,13 @@ export default function TowerDisplay({ tower, isCollapsing, isPremium = false, t
         </motion.div>
       ) : (
         <div className="standing-state">
+          <div className="tower-name-label">{towerName}</div>
           <motion.div
-            className="height-container"
+            className="height-number gradient-text"
             animate={isCollapsing ? { scale: [1, 0.95, 1], rotate: [0, -2, 2, 0] } : {}}
             transition={{ duration: 0.5 }}
           >
-            <span className="tower-icon-inline">{towerIcon}</span>
-            <span className="height-number gradient-text">{tower.height}</span>
+            {tower.height}
           </motion.div>
 
           <div className="blocks-visual">
