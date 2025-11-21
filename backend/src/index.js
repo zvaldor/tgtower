@@ -37,10 +37,11 @@ app.use('/api', apiRoutes);
 // Telegram webhook endpoint
 app.post('/webhook/telegram', (req, res) => {
   try {
+    console.log('📨 Webhook received:', JSON.stringify(req.body, null, 2));
     processUpdate(req.body);
     res.sendStatus(200);
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('❌ Error processing webhook:', error);
     res.sendStatus(500);
   }
 });
@@ -71,9 +72,10 @@ app.listen(PORT, async () => {
   console.log(`📡 Bot username: @${process.env.BOT_TOKEN?.split(':')[0] || 'unknown'}`);
   console.log(`🌐 WebApp URL: ${process.env.WEBAPP_URL}`);
 
-  // Webhook setup disabled - using polling mode
-  // const webhookUrl = process.env.WEBHOOK_URL || `https://tgtower-production.up.railway.app`;
-  // await setupWebhook(webhookUrl);
+  // Setup webhook for Telegram bot
+  const webhookUrl = process.env.WEBHOOK_URL || `https://tgtower-production.up.railway.app`;
+  console.log(`⚙️  Setting up webhook: ${webhookUrl}/webhook/telegram`);
+  await setupWebhook(webhookUrl);
 
   // Initialize cron jobs
   initializeCronJobs();

@@ -8,8 +8,11 @@ import { claimOffer } from '../services/offerService.js';
 
 dotenv.config();
 
-// Initialize bot with polling (temporary until webhook is properly configured)
-const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+// Initialize bot WITHOUT polling (will use webhook)
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: false });
+
+console.log('🤖 Bot initialized (webhook mode)');
+console.log('📱 Bot token:', process.env.BOT_TOKEN ? `${process.env.BOT_TOKEN.substring(0, 10)}...` : 'NOT SET');
 
 /**
  * /start command - Register user and show welcome message
@@ -369,11 +372,17 @@ ${referralLink}`;
  * Handle pre-checkout query (Stars payment validation)
  */
 bot.on('pre_checkout_query', async (query) => {
+  console.log('💳 Pre-checkout query received from:', query.from.id);
+  console.log('   Payload:', query.invoice_payload);
+  console.log('   Currency:', query.currency);
+  console.log('   Total amount:', query.total_amount);
+
   try {
     // Always approve (validation happens in successful_payment)
     await bot.answerPreCheckoutQuery(query.id, true);
+    console.log('✅ Pre-checkout approved');
   } catch (error) {
-    console.error('Error in pre_checkout_query:', error);
+    console.error('❌ Error in pre_checkout_query:', error);
     await bot.answerPreCheckoutQuery(query.id, false, {
       error_message: 'Payment validation failed',
     });
@@ -580,6 +589,16 @@ export async function setupWebhook(webhookUrl) {
  * Process webhook update
  */
 export function processUpdate(update) {
+  console.log('🔄 Processing update type:', Object.keys(update).filter(k => k !== 'update_id').join(', '));
+  if (update.message) {
+    console.log('   Message from:', update.message.from?.id, update.message.text?.substring(0, 50));
+  }
+  if (update.callback_query) {
+    console.log('   Callback from:', update.callback_query.from?.id, update.callback_query.data);
+  }
+  if (update.pre_checkout_query) {
+    console.log('   Pre-checkout from:', update.pre_checkout_query.from?.id);
+  }
   bot.processUpdate(update);
 }
 
