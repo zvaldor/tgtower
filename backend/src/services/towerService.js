@@ -150,9 +150,18 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
 
     // Update season stats (if paid with Stars)
     if (paidWithStars) {
-      // 95% goes to regular pool, 5% to premium pool
-      const regularPoolIncrease = 0.95; // 1 star * 0.95
-      const premiumPoolIncrease = 0.05; // 1 star * 0.05
+      // Since Telegram Stars are integers and price is 1 Star:
+      // - 1 Star goes to regular pool
+      // - Premium pool gets 1 Star every 20 blocks (5% average)
+      const regularPoolIncrease = 1;
+
+      // Check if this is a multiple of 20 blocks to add to premium pool
+      const seasonStats = await client.query(
+        'SELECT total_blocks FROM seasons WHERE id = $1',
+        [seasonId]
+      );
+      const totalBlocks = seasonStats.rows[0].total_blocks;
+      const premiumPoolIncrease = (totalBlocks + 1) % 20 === 0 ? 1 : 0;
 
       await client.query(
         `UPDATE seasons
