@@ -6,8 +6,8 @@ export default function TowerCarousel({ regularTower, premiumTower, isCollapsing
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const towers = [
-    { type: 'premium', data: premiumTower, icon: '💎', name: 'Премиум башня' },
-    { type: 'regular', data: regularTower, icon: '🪵', name: 'Обычная башня' },
+    { type: 'premium', data: premiumTower, icon: '💎', name: 'Premium Tower' },
+    { type: 'regular', data: regularTower, icon: '🪵', name: 'Wooden Tower' },
   ];
 
   const handlePrev = () => {
@@ -31,14 +31,11 @@ export default function TowerCarousel({ regularTower, premiumTower, isCollapsing
       </button>
 
       <div className="tower-carousel-content">
-        <div className="tower-type-label">
-          <span className="tower-icon">{currentTower.icon}</span>
-          <span className="tower-name">{currentTower.name}</span>
-        </div>
         <TowerDisplay
           tower={currentTower.data}
           isCollapsing={isCollapsing && currentIndex === 1}
           isPremium={currentTower.type === 'premium'}
+          towerIcon={currentTower.icon}
         />
       </div>
 

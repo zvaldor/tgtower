@@ -10,6 +10,7 @@ import {
   calculatePremiumPotentialPayout,
   getLeaderboard,
   getPremiumLeaderboard,
+  getTowerBlocks,
   claimPayout,
 } from '../services/towerService.js';
 import { getActivityFeed } from '../services/activityService.js';
@@ -75,6 +76,9 @@ export async function getGameState(req, res) {
     const leaderboard = await getLeaderboard(season.id, 100);
     const premiumLeaderboard = await getPremiumLeaderboard(season.id, 100);
 
+    // Get tower blocks with user info
+    const towerBlocks = await getTowerBlocks(tower.id, 20);
+
     // Get activity feed
     const activityFeed = await getActivityFeed(season.id, 5);
 
@@ -113,6 +117,7 @@ export async function getGameState(req, res) {
         collapse_height: tower.collapse_height,
         potential_payout: potentialPayout,
         next_block_collapse_chance: nextBlockCollapseChance,
+        blocks: towerBlocks,
       },
       premium_tower: {
         height: premiumTower.height,

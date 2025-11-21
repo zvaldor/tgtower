@@ -76,6 +76,7 @@ const migrations = [
   `CREATE TABLE IF NOT EXISTS blocks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tower_id UUID REFERENCES towers(id) NOT NULL,
+    user_id UUID REFERENCES users(id),
     block_number INT NOT NULL,
     was_fatal BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW()
@@ -155,6 +156,14 @@ const migrations = [
    BEGIN
      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='activity_feed' AND column_name='tower_type') THEN
        ALTER TABLE activity_feed ADD COLUMN tower_type TEXT DEFAULT 'regular' CHECK (tower_type IN ('regular', 'premium'));
+     END IF;
+   END $$;`,
+
+  // Migration 15: Add user_id to existing blocks table
+  `DO $$
+   BEGIN
+     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='blocks' AND column_name='user_id') THEN
+       ALTER TABLE blocks ADD COLUMN user_id UUID REFERENCES users(id);
      END IF;
    END $$;`,
 ];
