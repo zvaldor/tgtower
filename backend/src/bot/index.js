@@ -388,10 +388,17 @@ bot.on('successful_payment', async (msg) => {
   const telegramId = msg.from.id;
   const payment = msg.successful_payment;
 
+  console.log('=== PAYMENT RECEIVED ===');
+  console.log('Telegram ID:', telegramId);
+  console.log('Payment amount:', payment.total_amount);
+  console.log('Payment payload:', payment.invoice_payload);
+
   try {
     const payload = JSON.parse(payment.invoice_payload);
+    console.log('Parsed payload:', payload);
 
     const user = await getUserByTelegramId(telegramId);
+    console.log('User found:', user ? `ID ${user.id}` : 'NOT FOUND');
 
     if (!user) {
       await bot.sendMessage(chatId, 'User not found. Please start the bot with /start');
@@ -399,9 +406,13 @@ bot.on('successful_payment', async (msg) => {
     }
 
     if (payload.type === 'single_block') {
+      console.log('Processing single_block payment...');
       // Place block immediately
       const season = await getActiveSeason();
+      console.log('Active season:', season.id);
+
       const tower = await getOrCreateTower(user.id, season.id);
+      console.log('Tower state:', { id: tower.id, height: tower.height, collapsed: tower.is_collapsed });
 
       // Check if tower is already collapsed
       if (tower.is_collapsed) {
@@ -430,8 +441,12 @@ Your Stars will be refunded automatically. 💫`;
         return;
       }
 
+      console.log('Calling placeBlock...');
       const result = await placeBlock(user.id, season.id, true);
+      console.log('Block placed successfully:', result);
+
       const potentialPayout = await calculatePotentialPayout(user.id, season.id);
+      console.log('Potential payout:', potentialPayout);
 
       if (result.collapsed) {
         const analyticsMessage = `💥 Oh no! Your tower collapsed at height ${result.height}!
@@ -467,8 +482,10 @@ Your Stars will be refunded automatically. 💫`;
         });
       }
     } else if (payload.type === 'block_pack') {
+      console.log('Processing block_pack payment...');
       // Add blocks to balance
       const blocksAmount = payload.amount || 0;
+      console.log('Blocks amount:', blocksAmount);
 
       if (!blocksAmount) {
         throw new Error('Invalid blocks amount in payment');
@@ -476,27 +493,37 @@ Your Stars will be refunded automatically. 💫`;
 
       // Try to claim offer if offer_id is provided
       if (payload.offer_id) {
+        console.log('Attempting to claim offer:', payload.offer_id);
         try {
           await claimOffer(user.id, payload.offer_id);
+          console.log('Offer claimed successfully');
         } catch (offerError) {
           // If offer claim fails (already claimed, expired, etc.), add blocks directly
           console.warn('Failed to claim offer, adding blocks directly:', offerError.message);
           const { updateUserBlocksBalance } = await import('../services/userService.js');
           await updateUserBlocksBalance(user.id, blocksAmount);
+          console.log('Blocks added directly to balance');
         }
       } else {
         // No offer_id, add blocks directly
+        console.log('No offer_id, adding blocks directly');
         const { updateUserBlocksBalance } = await import('../services/userService.js');
         await updateUserBlocksBalance(user.id, blocksAmount);
+        console.log('Blocks added to balance');
       }
 
       await bot.sendMessage(
         chatId,
         `✅ Pack purchased successfully!\n\n+${blocksAmount} blocks added to your balance!`
       );
+      console.log('Success message sent to user');
     }
   } catch (error) {
-    console.error('Error in successful_payment:', error);
+    console.error('=== ERROR in successful_payment ===');
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('===================================');
     await bot.sendMessage(chatId, 'Payment processed but an error occurred. Please contact support.');
   }
 });
