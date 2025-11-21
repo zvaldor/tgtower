@@ -51,10 +51,10 @@ export async function getOrCreateUser(telegramId, username, firstName, referredB
 
     const newUser = result.rows[0];
 
-    // Create newcomer special offer (50 blocks for 475 Stars, expires in 3 days)
+    // Create newcomer special offer (50 blocks for 48 Stars, expires in 3 days)
     await client.query(
       `INSERT INTO special_offers (user_id, offer_type, blocks_amount, stars_price, expires_at)
-       VALUES ($1, 'newcomer_50blocks', 50, 475, NOW() + INTERVAL '3 days')`,
+       VALUES ($1, 'newcomer_50blocks', 50, 48, NOW() + INTERVAL '3 days')`,
       [newUser.id]
     );
 

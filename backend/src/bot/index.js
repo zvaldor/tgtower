@@ -52,7 +52,7 @@ bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
 
 Build your tower, risk it all, win big!
 
-Each block costs 10 Stars ⭐️
+Each block costs 1 Star ⭐️
 The higher you go, the bigger your share of the prize pool!
 
 But be careful — each block increases collapse chance...
@@ -276,11 +276,11 @@ Come back then to build a new tower! 🏗️`;
         await bot.sendInvoice(
           chatId,
           '🧱 Place 1 Block',
-          'Pay 10 Stars',
+          'Pay 1 Star',
           JSON.stringify({ type: 'single_block' }),
           '', // provider_token (empty for Stars)
           'XTR', // currency (Telegram Stars)
-          [{ label: 'Place Block', amount: 10 }]
+          [{ label: 'Place Block', amount: 1 }]
         );
 
         await bot.answerCallbackQuery(query.id);
@@ -511,12 +511,12 @@ export async function createInvoice(telegramId, type, amount = null, offerId = n
   if (type === 'single_block') {
     title = 'Place 1 Block';
     description = 'Add 1 block to your tower';
-    price = 10;
+    price = 1;
     payload = JSON.stringify({ type: 'single_block' });
   } else if (type === 'block_pack') {
     title = `${amount} Blocks Pack`;
     description = `Get ${amount} blocks for your tower`;
-    price = Math.floor(amount * 9.5); // 5% discount
+    price = Math.floor(amount * 0.95); // 5% discount
     payload = JSON.stringify({ type: 'block_pack', amount, offer_id: offerId });
   } else {
     throw new Error('Invalid invoice type');
