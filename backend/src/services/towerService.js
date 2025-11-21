@@ -151,8 +151,8 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
     // Update season stats (if paid with Stars)
     if (paidWithStars) {
       // 95% goes to regular pool, 5% to premium pool
-      const regularPoolIncrease = 9.5; // 10 stars * 0.95
-      const premiumPoolIncrease = 0.5; // 10 stars * 0.05
+      const regularPoolIncrease = 0.95; // 1 star * 0.95
+      const premiumPoolIncrease = 0.05; // 1 star * 0.05
 
       await client.query(
         `UPDATE seasons
@@ -167,7 +167,7 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
       await client.query(
         `UPDATE users
          SET total_blocks_placed = total_blocks_placed + 1,
-             total_stars_spent = total_stars_spent + 10
+             total_stars_spent = total_stars_spent + 1
          WHERE id = $1`,
         [userId]
       );
