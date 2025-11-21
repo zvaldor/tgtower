@@ -54,9 +54,9 @@
 
 .leaderboard-heights {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
 }
 
 .height-regular,

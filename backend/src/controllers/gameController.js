@@ -80,7 +80,7 @@ export async function getGameState(req, res) {
     const towerBlocks = await getTowerBlocks(tower.id, 20);
 
     // Get activity feed
-    const activityFeed = await getActivityFeed(season.id, 20);
+    const activityFeed = await getActivityFeed(season.id, 10);
 
     // Get special offers
     const specialOffers = await getActiveOffers(user.id);

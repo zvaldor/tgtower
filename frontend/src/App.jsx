@@ -9,6 +9,7 @@ import Leaderboard from './components/Leaderboard';
 import ReferralButton from './components/ReferralButton';
 import Onboarding from './components/Onboarding';
 import ScreenCarousel from './components/ScreenCarousel';
+import ScrollToTopButton from './components/ScrollToTopButton';
 import './App.css';
 
 export default function App() {
@@ -307,6 +308,7 @@ export default function App() {
           <div className="container">
             <h2 className="screen-title">⚡ Live Activity</h2>
             <ActivityFeed activities={gameState.activity_feed || []} />
+            <ScrollToTopButton />
           </div>
         </div>
       </ScreenCarousel>

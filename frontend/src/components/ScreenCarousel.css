@@ -30,6 +30,10 @@
 
 .screen-header {
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
 }
 
 .screen-content {
@@ -44,4 +48,9 @@
   color: var(--text-color);
   margin-bottom: 20px;
   text-align: center;
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  padding: 16px 0;
+  z-index: 10;
 }

@@ -1,5 +1,5 @@
 .tower-display {
-  padding: 40px 0;
+  padding: 16px 0;
   text-align: center;
 }
 
@@ -37,26 +37,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
-.tower-name-label {
+.tower-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
+}
+
+.tower-name-text {
   color: var(--text-primary);
   opacity: 0.9;
 }
 
-.height-number {
-  font-size: 72px;
+.tower-height-text {
   font-weight: 800;
-  line-height: 1;
-}
-
-@media (max-width: 375px) {
-  .height-number {
-    font-size: 64px;
-  }
 }
 
 .blocks-visual {
