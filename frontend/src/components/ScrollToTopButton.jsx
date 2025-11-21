@@ -1,7 +1,7 @@
 import React from 'react';
 import './ScrollToTopButton.css';
 
-export default function ScrollToTopButton() {
+export default function ScrollToTopButton({ isVisible = true }) {
   const scrollToTop = () => {
     // Find the screen carousel container
     const carousel = document.querySelector('.screen-carousel');
@@ -13,6 +13,10 @@ export default function ScrollToTopButton() {
       });
     }
   };
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <button className="scroll-to-top-button" onClick={scrollToTop}>

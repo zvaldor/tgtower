@@ -20,6 +20,7 @@ export default function App() {
   const [timeOffset, setTimeOffset] = useState(0); // Server time - client time
   const [currentTowerType, setCurrentTowerType] = useState('regular'); // 'regular' or 'premium'
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState(0); // Current screen index
 
   // Load game state on mount
   useEffect(() => {
@@ -255,7 +256,7 @@ export default function App() {
     <div className="app">
       {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
 
-      <ScreenCarousel>
+      <ScreenCarousel onScreenChange={setCurrentScreen}>
         {/* Screen 1: Main Screen */}
         <div className="screen">
           <div className="screen-header">
@@ -308,7 +309,7 @@ export default function App() {
           <div className="container">
             <h2 className="screen-title">⚡ Live Activity</h2>
             <ActivityFeed activities={gameState.activity_feed || []} />
-            <ScrollToTopButton />
+            <ScrollToTopButton isVisible={currentScreen !== 0} />
           </div>
         </div>
       </ScreenCarousel>

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './ScreenCarousel.css';
 
-export default function ScreenCarousel({ children }) {
+export default function ScreenCarousel({ children, onScreenChange }) {
   const containerRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeout = useRef(null);
@@ -27,6 +27,14 @@ export default function ScreenCarousel({ children }) {
         const scrollTop = container.scrollTop;
         const screenHeight = window.innerHeight;
         const totalScreens = React.Children.count(children) + 2; // including clones
+
+        // Calculate current screen index (0-based, excluding clones)
+        const currentScreenIndex = Math.round(scrollTop / screenHeight) - 1;
+
+        // Notify parent of screen change
+        if (onScreenChange && currentScreenIndex >= 0 && currentScreenIndex < React.Children.count(children)) {
+          onScreenChange(currentScreenIndex);
+        }
 
         // If scrolled to the cloned last screen (at the beginning)
         if (scrollTop < screenHeight * 0.5) {
@@ -58,7 +66,7 @@ export default function ScreenCarousel({ children }) {
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, [children, isScrolling]);
+  }, [children, isScrolling, onScreenChange]);
 
   // Clone first and last children for infinite loop
   const childrenArray = React.Children.toArray(children);
