@@ -1,0 +1,59 @@
+.tower-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.carousel-arrow {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.carousel-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.carousel-arrow:active {
+  transform: scale(0.95);
+}
+
+.tower-carousel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tower-type-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+.tower-icon {
+  font-size: 24px;
+}
+
+.tower-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}

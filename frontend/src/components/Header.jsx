@@ -39,7 +39,12 @@ export default function Header({ season, user, timeOffset = 0 }) {
         </div>
         <div className="prize-pool">
           <span className="pool-label">Prize Pool</span>
-          <span className="pool-amount">{season.total_pool} ⭐️</span>
+          <span className="pool-amount">
+            {season.total_pool} ⭐️
+            {season.premium_pool > 0 && (
+              <span className="premium-pool"> + {season.premium_pool} ⭐️ 💎</span>
+            )}
+          </span>
         </div>
         {user.blocks_balance > 0 && (
           <div className="balance-item">

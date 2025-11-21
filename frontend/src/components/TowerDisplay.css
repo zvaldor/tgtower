@@ -168,3 +168,64 @@
 .stat-danger {
   color: var(--accent-red);
 }
+
+/* Premium tower styles */
+.tower-premium .blocks-visual {
+  background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.tower-premium .block {
+  background: linear-gradient(135deg,
+    #00d4ff 0%,
+    #7b68ee 25%,
+    #ff1493 50%,
+    #00d4ff 75%,
+    #7b68ee 100%);
+  background-size: 200% 200%;
+  animation: diamondShine 3s ease infinite;
+  box-shadow:
+    0 0 10px rgba(0, 212, 255, 0.5),
+    0 0 20px rgba(123, 104, 238, 0.3),
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes diamondShine {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.tower-premium .block::before {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(255,255,255,0.1) 6px,
+    rgba(255,255,255,0.1) 8px
+  );
+}
+
+.tower-premium .block::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.3) 50%,
+    transparent 100%
+  );
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

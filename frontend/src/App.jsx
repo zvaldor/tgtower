@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient, telegramWebApp } from './api/client';
 import Header from './components/Header';
-import TowerDisplay from './components/TowerDisplay';
+import TowerCarousel from './components/TowerCarousel';
 import ActionButton from './components/ActionButton';
 import SpecialOffers from './components/SpecialOffers';
 import ActivityFeed from './components/ActivityFeed';
 import Leaderboard from './components/Leaderboard';
 import ReferralButton from './components/ReferralButton';
+import Onboarding from './components/Onboarding';
 import './App.css';
 
 export default function App() {
@@ -15,6 +16,8 @@ export default function App() {
   const [isCollapsing, setIsCollapsing] = useState(false);
   const [error, setError] = useState(null);
   const [timeOffset, setTimeOffset] = useState(0); // Server time - client time
+  const [currentTowerType, setCurrentTowerType] = useState('regular'); // 'regular' or 'premium'
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Load game state on mount
   useEffect(() => {
@@ -55,10 +58,24 @@ export default function App() {
         setTimeOffset(serverTime - clientTime);
       }
 
+      // Show onboarding for new users
+      if (!data.user.showed_onboarding) {
+        setShowOnboarding(true);
+      }
+
       setGameState(data);
     } catch (err) {
       console.error('Failed to load game state:', err);
       setError(err.message);
+    }
+  };
+
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    try {
+      await apiClient.markOnboardingShown();
+    } catch (err) {
+      console.error('Failed to mark onboarding shown:', err);
     }
   };
 
@@ -125,6 +142,58 @@ export default function App() {
     }
   };
 
+  const handlePlacePremiumBlock = async () => {
+    if (!gameState) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const hasPremiumBlocks = gameState.user.premium_blocks_balance > 0;
+
+      if (!hasPremiumBlocks) {
+        telegramWebApp.showAlert('You need premium blocks! Place 10 regular blocks to earn 1 premium block.');
+        return;
+      }
+
+      telegramWebApp.hapticFeedback('medium');
+
+      const result = await apiClient.placePremiumBlock();
+
+      // Sync time with server
+      if (result.server_time) {
+        const serverTime = new Date(result.server_time).getTime();
+        const clientTime = Date.now();
+        setTimeOffset(serverTime - clientTime);
+      }
+
+      if (result.collapsed) {
+        // Premium tower collapsed
+        setIsCollapsing(true);
+        telegramWebApp.hapticFeedback('heavy');
+
+        setTimeout(() => {
+          setIsCollapsing(false);
+          telegramWebApp.showAlert(
+            `Your premium tower collapsed at height ${result.height}! The premium pool is lost.`
+          );
+        }, 500);
+      } else {
+        // Block placed successfully
+        telegramWebApp.hapticFeedback('light');
+      }
+
+      // Reload game state
+      await loadGameState();
+    } catch (err) {
+      console.error('Failed to place premium block:', err);
+      setError(err.message);
+      telegramWebApp.showAlert(`Error: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleBuyOffer = async (offer) => {
     try {
       telegramWebApp.hapticFeedback('medium');
@@ -177,15 +246,25 @@ export default function App() {
 
   return (
     <div className="app">
+      {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
+
       <div className="container">
         <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
 
-        <TowerDisplay tower={gameState.tower} isCollapsing={isCollapsing} />
+        <TowerCarousel
+          regularTower={gameState.tower}
+          premiumTower={gameState.premium_tower}
+          isCollapsing={isCollapsing}
+          onTowerChange={setCurrentTowerType}
+        />
 
         <ActionButton
           tower={gameState.tower}
+          premiumTower={gameState.premium_tower}
           user={gameState.user}
+          currentTowerType={currentTowerType}
           onPlaceBlock={handlePlaceBlock}
+          onPlacePremiumBlock={handlePlacePremiumBlock}
           isLoading={isLoading}
         />
 
@@ -193,7 +272,10 @@ export default function App() {
           <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
         )}
 
-        <Leaderboard leaderboard={gameState.leaderboard || []} />
+        <Leaderboard
+          leaderboard={gameState.leaderboard || []}
+          premiumLeaderboard={gameState.premium_leaderboard || []}
+        />
 
         <ReferralButton
           userId={gameState.user.telegram_id}

@@ -3,6 +3,10 @@ import { motion } from 'framer-motion';
 import './ActivityFeed.css';
 
 export default function ActivityFeed({ activities }) {
+  const getTowerIcon = (towerType) => {
+    return towerType === 'premium' ? '💎' : '🪵';
+  };
+
   const getActionIcon = (action) => {
     switch (action) {
       case 'block_placed':
@@ -18,16 +22,24 @@ export default function ActivityFeed({ activities }) {
 
   const getActionText = (activity) => {
     const name = activity.telegram_first_name || 'Player';
+    const towerIcon = getTowerIcon(activity.tower_type);
+
     switch (activity.action) {
       case 'block_placed':
-        return `${name} placed block #${activity.height}`;
+        return `${name} placed ${towerIcon} block #${activity.height}`;
       case 'tower_collapsed':
-        return `${name}'s tower collapsed at ${activity.height}`;
+        return `${name}'s ${towerIcon} tower collapsed at ${activity.height}`;
       case 'payout_claimed':
         return `${name} claimed payout!`;
       default:
         return `${name} did something`;
     }
+  };
+
+  const getUserPhoto = (telegramId) => {
+    // Telegram doesn't provide profile photos via WebApp API directly
+    // We'll use a placeholder or initials
+    return null;
   };
 
   const formatTime = (timestamp) => {

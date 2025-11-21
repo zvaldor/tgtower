@@ -3,15 +3,17 @@
  * Formula: 1 - (0.9999 ^ height)
  * Reduced by 100x from original 0.99 to make collapse much rarer
  */
-export function calculateCollapseChance(height) {
-  return 1 - Math.pow(0.9999, height);
+export function calculateCollapseChance(height, isPremium = false) {
+  const baseChance = 1 - Math.pow(0.9999, height);
+  // Premium tower has 2x collapse chance
+  return isPremium ? Math.min(baseChance * 2, 1) : baseChance;
 }
 
 /**
  * Check if tower should collapse at current height
  */
-export function checkCollapse(height) {
-  const probability = calculateCollapseChance(height);
+export function checkCollapse(height, isPremium = false) {
+  const probability = calculateCollapseChance(height, isPremium);
   return Math.random() < probability;
 }
 

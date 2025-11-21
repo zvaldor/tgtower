@@ -2,12 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TowerDisplay.css';
 
-export default function TowerDisplay({ tower, isCollapsing }) {
+export default function TowerDisplay({ tower, isCollapsing, isPremium = false }) {
   const maxBlocksToShow = 20;
   const blocksToShow = Math.min(tower.height, maxBlocksToShow);
 
   return (
-    <div className="tower-display">
+    <div className={`tower-display ${isPremium ? 'tower-premium' : ''}`}>
       {tower.is_collapsed ? (
         <motion.div
           className="collapsed-state"

@@ -2,6 +2,8 @@ import express from 'express';
 import {
   getGameState,
   placeBlockHandler,
+  placePremiumBlockHandler,
+  markOnboardingShownHandler,
   claimPayoutHandler,
 } from '../controllers/gameController.js';
 import { createInvoice } from '../bot/index.js';
@@ -20,6 +22,18 @@ router.post('/game-state', getGameState);
  * Place a block using blocks balance
  */
 router.post('/place-block', placeBlockHandler);
+
+/**
+ * POST /api/place-premium-block
+ * Place a premium block using premium blocks balance
+ */
+router.post('/place-premium-block', placePremiumBlockHandler);
+
+/**
+ * POST /api/mark-onboarding-shown
+ * Mark onboarding as shown for user
+ */
+router.post('/mark-onboarding-shown', markOnboardingShownHandler);
 
 /**
  * POST /api/create-invoice
