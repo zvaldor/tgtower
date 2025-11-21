@@ -8,6 +8,7 @@ import ActivityFeed from './components/ActivityFeed';
 import Leaderboard from './components/Leaderboard';
 import ReferralButton from './components/ReferralButton';
 import Onboarding from './components/Onboarding';
+import ScreenCarousel from './components/ScreenCarousel';
 import './App.css';
 
 export default function App() {
@@ -248,42 +249,62 @@ export default function App() {
     <div className="app">
       {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
 
-      <div className="container">
-        <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
+      <ScreenCarousel>
+        {/* Screen 1: Main Screen */}
+        <div className="screen">
+          <div className="screen-header">
+            <div className="container">
+              <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
+            </div>
+          </div>
+          <div className="screen-content">
+            <TowerCarousel
+              regularTower={gameState.tower}
+              premiumTower={gameState.premium_tower}
+              isCollapsing={isCollapsing}
+              onTowerChange={setCurrentTowerType}
+            />
 
-        <TowerCarousel
-          regularTower={gameState.tower}
-          premiumTower={gameState.premium_tower}
-          isCollapsing={isCollapsing}
-          onTowerChange={setCurrentTowerType}
-        />
+            <ActionButton
+              tower={gameState.tower}
+              premiumTower={gameState.premium_tower}
+              user={gameState.user}
+              currentTowerType={currentTowerType}
+              onPlaceBlock={handlePlaceBlock}
+              onPlacePremiumBlock={handlePlacePremiumBlock}
+              isLoading={isLoading}
+            />
 
-        <ActionButton
-          tower={gameState.tower}
-          premiumTower={gameState.premium_tower}
-          user={gameState.user}
-          currentTowerType={currentTowerType}
-          onPlaceBlock={handlePlaceBlock}
-          onPlacePremiumBlock={handlePlacePremiumBlock}
-          isLoading={isLoading}
-        />
+            {gameState.special_offers && gameState.special_offers.length > 0 && (
+              <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
+            )}
+          </div>
+        </div>
 
-        {gameState.special_offers && gameState.special_offers.length > 0 && (
-          <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
-        )}
+        {/* Screen 2: Top Tower Builders */}
+        <div className="screen">
+          <div className="container">
+            <h2 className="screen-title">🏆 Top Tower Builders</h2>
+            <Leaderboard
+              leaderboard={gameState.leaderboard || []}
+              premiumLeaderboard={gameState.premium_leaderboard || []}
+            />
 
-        <Leaderboard
-          leaderboard={gameState.leaderboard || []}
-          premiumLeaderboard={gameState.premium_leaderboard || []}
-        />
+            <ReferralButton
+              userId={gameState.user.telegram_id}
+              botUsername={gameState.bot_username}
+            />
+          </div>
+        </div>
 
-        <ReferralButton
-          userId={gameState.user.telegram_id}
-          botUsername={gameState.bot_username}
-        />
-
-        <ActivityFeed activities={gameState.activity_feed || []} />
-      </div>
+        {/* Screen 3: Live Activity */}
+        <div className="screen">
+          <div className="container">
+            <h2 className="screen-title">⚡ Live Activity</h2>
+            <ActivityFeed activities={gameState.activity_feed || []} />
+          </div>
+        </div>
+      </ScreenCarousel>
     </div>
   );
 }

@@ -7,18 +7,18 @@ export default function Onboarding({ onComplete }) {
   const screens = [
     {
       emoji: '🎮',
-      title: 'Добро пожаловать!',
-      text: 'Покупай блоки за стразы и строй башню. Чем выше твоя башня, тем больше твоя доля в призовом пуле!',
+      title: 'Welcome!',
+      text: 'Buy blocks with Stars and build your tower. The higher your tower, the bigger your share of the prize pool!',
     },
     {
       emoji: '💥',
-      title: 'Не урони башню!',
-      text: 'Если башня падает, призовой пул разыгрывается между всеми пользователями. Тот, кто уронил башню, ничего не получает. Остальные распределяют стразы между собой пропорционально высоте.',
+      title: 'Don\'t Drop the Tower!',
+      text: 'If the tower collapses, the prize pool is distributed among all users. The one who dropped it gets nothing. Others split the Stars proportionally to their height.',
     },
     {
       emoji: '💎',
-      title: 'Премиум башня',
-      text: 'За каждые 10 блоков ты получаешь премиум блок. Они используются для строительства премиум башни из бриллиантов. Премиум башня добавляет призовой пул. Если она упала раньше обычной башни, то часть призового фонда сгорит, так что будь аккуратен, строитель!',
+      title: 'Premium Tower',
+      text: 'For every 10 blocks you earn a premium block. Use them to build the premium diamond tower. It adds to the prize pool. If it falls before the wooden tower, part of the prize pool burns, so be careful, builder!',
     },
   ];
 
@@ -49,7 +49,7 @@ export default function Onboarding({ onComplete }) {
         </div>
 
         <button className="onboarding-button" onClick={handleNext}>
-          {currentScreen < screens.length - 1 ? 'Далее' : 'Начать!'}
+          {currentScreen < screens.length - 1 ? 'Next' : 'Start!'}
         </button>
       </div>
     </div>

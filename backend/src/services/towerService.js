@@ -85,10 +85,10 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
 
     // Create block record
     const blockResult = await client.query(
-      `INSERT INTO blocks (tower_id, block_number)
-       VALUES ($1, $2)
+      `INSERT INTO blocks (tower_id, user_id, block_number)
+       VALUES ($1, $2, $3)
        RETURNING id`,
-      [tower.id, newHeight]
+      [tower.id, userId, newHeight]
     );
 
     const blockId = blockResult.rows[0].id;
@@ -536,6 +536,28 @@ export async function getPremiumLeaderboard(seasonId, limit = 100) {
      ORDER BY pt.height DESC, pt.created_at ASC
      LIMIT $2`,
     [seasonId, limit]
+  );
+
+  return result.rows;
+}
+
+/**
+ * Get blocks for a tower with user information
+ */
+export async function getTowerBlocks(towerId, limit = 20) {
+  const result = await pool.query(
+    `SELECT
+       b.block_number,
+       b.user_id,
+       u.telegram_first_name,
+       u.telegram_username,
+       u.telegram_id
+     FROM blocks b
+     LEFT JOIN users u ON b.user_id = u.id
+     WHERE b.tower_id = $1
+     ORDER BY b.block_number DESC
+     LIMIT $2`,
+    [towerId, limit]
   );
 
   return result.rows;
