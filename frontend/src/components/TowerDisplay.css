@@ -37,18 +37,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
 }
 
-.height-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.tower-icon-inline {
-  font-size: 48px;
-  line-height: 1;
+.tower-name-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0.9;
 }
 
 .height-number {
@@ -60,10 +56,6 @@
 @media (max-width: 375px) {
   .height-number {
     font-size: 64px;
-  }
-
-  .tower-icon-inline {
-    font-size: 40px;
   }
 }
 

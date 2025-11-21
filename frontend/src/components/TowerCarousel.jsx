@@ -35,7 +35,7 @@ export default function TowerCarousel({ regularTower, premiumTower, isCollapsing
           tower={currentTower.data}
           isCollapsing={isCollapsing && currentIndex === 0}
           isPremium={currentTower.type === 'premium'}
-          towerIcon={currentTower.icon}
+          towerName={currentTower.name}
         />
       </div>
 
