@@ -183,6 +183,78 @@ class ApiClient {
       }),
     });
   }
+
+  /**
+   * Get all clans
+   */
+  async getClans() {
+    return this.request('/api/clans/list', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+  }
+
+  /**
+   * Get clan leaderboard
+   */
+  async getClanLeaderboard(seasonId) {
+    return this.request('/api/clans/leaderboard', {
+      method: 'POST',
+      body: JSON.stringify({ season_id: seasonId }),
+    });
+  }
+
+  /**
+   * Get clan members
+   */
+  async getClanMembers(clanId, seasonId) {
+    return this.request('/api/clans/members', {
+      method: 'POST',
+      body: JSON.stringify({ clan_id: clanId, season_id: seasonId }),
+    });
+  }
+
+  /**
+   * Join a clan
+   */
+  async joinClan(clanId, seasonNumber) {
+    const userData = telegramWebApp.getUserData();
+
+    return this.request('/api/clans/join', {
+      method: 'POST',
+      body: JSON.stringify({
+        telegram_id: userData.telegram_id,
+        clan_id: clanId,
+        season_number: seasonNumber,
+      }),
+    });
+  }
+
+  /**
+   * Leave current clan
+   */
+  async leaveClan(seasonNumber, towerIsCollapsed) {
+    const userData = telegramWebApp.getUserData();
+
+    return this.request('/api/clans/leave', {
+      method: 'POST',
+      body: JSON.stringify({
+        telegram_id: userData.telegram_id,
+        season_number: seasonNumber,
+        tower_is_collapsed: towerIsCollapsed,
+      }),
+    });
+  }
+
+  /**
+   * Get clan special offers
+   */
+  async getClanSpecialOffers(clanId) {
+    return this.request('/api/clans/special-offers', {
+      method: 'POST',
+      body: JSON.stringify({ clan_id: clanId }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

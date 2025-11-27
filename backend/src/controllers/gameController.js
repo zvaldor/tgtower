@@ -16,6 +16,7 @@ import {
 import { getActivityFeed } from '../services/activityService.js';
 import { getActiveOffers } from '../services/offerService.js';
 import { calculateCollapseChance } from '../services/gameLogic.js';
+import clanService from '../services/clanService.js';
 import bot from '../bot/index.js';
 
 /**
@@ -89,6 +90,20 @@ export async function getGameState(req, res) {
     const botInfo = await bot.getMe();
     const botUsername = botInfo.username;
 
+    // Get user's clan info
+    let userClan = null;
+    let clanOffers = [];
+    if (user.clan_id) {
+      userClan = await clanService.getClanById(user.clan_id);
+      clanOffers = await clanService.getClanSpecialOffers(user.clan_id);
+    }
+
+    // Get all clans
+    const allClans = await clanService.getAllClans();
+
+    // Get clan leaderboard
+    const clanLeaderboard = await clanService.getClanLeaderboard(season.id);
+
     res.json({
       server_time: new Date().toISOString(),
       user: {
@@ -102,6 +117,8 @@ export async function getGameState(req, res) {
         total_stars_spent: user.total_stars_spent,
         total_stars_won: user.total_stars_won,
         showed_onboarding: user.showed_onboarding,
+        clan: userClan,
+        clan_join_season: user.clan_join_season,
       },
       season: {
         number: season.season_number,
@@ -128,9 +145,12 @@ export async function getGameState(req, res) {
       },
       bot_username: botUsername,
       special_offers: specialOffers,
+      clan_offers: clanOffers,
       leaderboard,
       premium_leaderboard: premiumLeaderboard,
       activity_feed: activityFeed,
+      clans: allClans,
+      clan_leaderboard: clanLeaderboard,
     });
   } catch (error) {
     console.error('Error in getGameState:', error);

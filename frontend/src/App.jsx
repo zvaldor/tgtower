@@ -3,13 +3,14 @@ import { apiClient, telegramWebApp } from './api/client';
 import Header from './components/Header';
 import TowerCarousel from './components/TowerCarousel';
 import ActionButton from './components/ActionButton';
+import QuickActions from './components/QuickActions';
+import BottomSheet from './components/BottomSheet';
 import SpecialOffers from './components/SpecialOffers';
 import ActivityFeed from './components/ActivityFeed';
 import Leaderboard from './components/Leaderboard';
 import ReferralButton from './components/ReferralButton';
 import Onboarding from './components/Onboarding';
-import ScreenCarousel from './components/ScreenCarousel';
-import ScrollToTopButton from './components/ScrollToTopButton';
+import ClansPage from './components/ClansPage';
 import './App.css';
 
 export default function App() {
@@ -20,7 +21,12 @@ export default function App() {
   const [timeOffset, setTimeOffset] = useState(0); // Server time - client time
   const [currentTowerType, setCurrentTowerType] = useState('regular'); // 'regular' or 'premium'
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState(0); // Current screen index
+
+  // Bottom sheet states
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showActivity, setShowActivity] = useState(false);
+  const [showOffers, setShowOffers] = useState(false);
+  const [showClans, setShowClans] = useState(false);
 
   // Load game state on mount
   useEffect(() => {
@@ -256,63 +262,103 @@ export default function App() {
     <div className="app">
       {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
 
-      <ScreenCarousel onScreenChange={setCurrentScreen}>
-        {/* Screen 1: Main Screen */}
-        <div className="screen">
-          <div className="screen-header">
-            <div className="container">
-              <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
-            </div>
-          </div>
-          <div className="screen-content">
-            <TowerCarousel
-              regularTower={gameState.tower}
-              premiumTower={gameState.premium_tower}
-              isCollapsing={isCollapsing}
-              onTowerChange={setCurrentTowerType}
-            />
-
-            <ActionButton
-              tower={gameState.tower}
-              premiumTower={gameState.premium_tower}
-              user={gameState.user}
-              currentTowerType={currentTowerType}
-              onPlaceBlock={handlePlaceBlock}
-              onPlacePremiumBlock={handlePlacePremiumBlock}
-              isLoading={isLoading}
-            />
-
-            {gameState.special_offers && gameState.special_offers.length > 0 && (
-              <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
-            )}
-          </div>
+      {/* Main Screen */}
+      <div className="main-screen">
+        {/* Header */}
+        <div className="main-header">
+          <Header season={gameState.season} user={gameState.user} timeOffset={timeOffset} />
         </div>
 
-        {/* Screen 2: Top Tower Builders */}
-        <div className="screen">
-          <div className="container">
-            <h2 className="screen-title">🏆 Top Tower Builders</h2>
-            <Leaderboard
-              leaderboard={gameState.leaderboard || []}
-              premiumLeaderboard={gameState.premium_leaderboard || []}
-            />
-
-            <ReferralButton
-              userId={gameState.user.telegram_id}
-              botUsername={gameState.bot_username}
-            />
-          </div>
+        {/* Tower Display */}
+        <div className="tower-container">
+          <TowerCarousel
+            regularTower={gameState.tower}
+            premiumTower={gameState.premium_tower}
+            isCollapsing={isCollapsing}
+            onTowerChange={setCurrentTowerType}
+          />
         </div>
 
-        {/* Screen 3: Live Activity */}
-        <div className="screen">
-          <div className="container">
-            <h2 className="screen-title">⚡ Live Activity</h2>
-            <ActivityFeed activities={gameState.activity_feed || []} />
-            <ScrollToTopButton isVisible={currentScreen !== 0} />
-          </div>
+        {/* Fixed Action Button (Dynamic Island style) */}
+        <div className="action-island">
+          <ActionButton
+            tower={gameState.tower}
+            premiumTower={gameState.premium_tower}
+            user={gameState.user}
+            currentTowerType={currentTowerType}
+            onPlaceBlock={handlePlaceBlock}
+            onPlacePremiumBlock={handlePlacePremiumBlock}
+            isLoading={isLoading}
+          />
+
+          {/* Quick Actions */}
+          <QuickActions
+            onOpenLeaderboard={() => setShowLeaderboard(true)}
+            onOpenActivity={() => setShowActivity(true)}
+            onOpenOffers={() => setShowOffers(true)}
+            onOpenClans={() => setShowClans(true)}
+          />
         </div>
-      </ScreenCarousel>
+      </div>
+
+      {/* Bottom Sheets */}
+      <BottomSheet
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        title="🏆 Top Tower Builders"
+        height="85vh"
+      >
+        <Leaderboard
+          leaderboard={gameState.leaderboard || []}
+          premiumLeaderboard={gameState.premium_leaderboard || []}
+        />
+        <ReferralButton
+          userId={gameState.user.telegram_id}
+          botUsername={gameState.bot_username}
+        />
+      </BottomSheet>
+
+      <BottomSheet
+        isOpen={showActivity}
+        onClose={() => setShowActivity(false)}
+        title="⚡ Live Activity"
+        height="85vh"
+      >
+        <ActivityFeed activities={gameState.activity_feed || []} />
+      </BottomSheet>
+
+      <BottomSheet
+        isOpen={showOffers}
+        onClose={() => setShowOffers(false)}
+        title="🎁 Special Offers"
+        height="70vh"
+      >
+        {gameState.special_offers && gameState.special_offers.length > 0 ? (
+          <SpecialOffers offers={gameState.special_offers} onBuyOffer={handleBuyOffer} />
+        ) : (
+          <div className="empty-state">
+            <p>No special offers available at the moment.</p>
+          </div>
+        )}
+      </BottomSheet>
+
+      <BottomSheet
+        isOpen={showClans}
+        onClose={() => setShowClans(false)}
+        title="🛡️ Clans"
+        height="85vh"
+      >
+        <ClansPage
+          clans={gameState.clans || []}
+          clanLeaderboard={gameState.clan_leaderboard || []}
+          userClan={gameState.user?.clan}
+          clanOffers={gameState.clan_offers || []}
+          seasonNumber={gameState.season?.number}
+          towerIsCollapsed={gameState.tower?.is_collapsed}
+          onClanJoined={loadGameState}
+          onBuyOffer={handleBuyOffer}
+        />
+      </BottomSheet>
     </div>
   );
 }

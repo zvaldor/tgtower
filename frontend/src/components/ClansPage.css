@@ -1,0 +1,248 @@
+.clans-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.current-clan-section,
+.clan-leaderboard-section,
+.all-clans-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.current-clan-section h3,
+.clan-leaderboard-section h3,
+.all-clans-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+/* Clan Card */
+.clan-card {
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.clan-card.current {
+  cursor: default;
+}
+
+.clan-card:active:not(.current) {
+  transform: scale(0.98);
+}
+
+.clan-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.clan-info {
+  flex: 1;
+  color: white;
+}
+
+.clan-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.clan-description {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+  color: white;
+}
+
+.clan-stats {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+  color: white;
+}
+
+.clan-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+/* Clan Leaderboard */
+.clan-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clan-leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--tg-theme-section-bg-color, rgba(0, 0, 0, 0.05));
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clan-leaderboard-item:active {
+  background: var(--tg-theme-section-bg-color, rgba(0, 0, 0, 0.1));
+}
+
+.clan-rank {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 32px;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+.clan-icon-small {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.clan-leaderboard-info {
+  flex: 1;
+}
+
+.clan-leaderboard-info .clan-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+.clan-leaderboard-info .clan-stats {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color, #999999);
+  margin: 0;
+}
+
+/* Clans Grid */
+.clans-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Info Message */
+.info-message {
+  background: var(--tg-theme-section-bg-color, rgba(0, 0, 0, 0.05));
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #999999);
+  line-height: 1.5;
+}
+
+/* Dark theme */
+[data-theme='dark'] .clan-leaderboard-item {
+  background: var(--tg-theme-section-bg-color, rgba(255, 255, 255, 0.05));
+}
+
+[data-theme='dark'] .clan-leaderboard-item:active {
+  background: var(--tg-theme-section-bg-color, rgba(255, 255, 255, 0.1));
+}
+
+[data-theme='dark'] .info-message {
+  background: var(--tg-theme-section-bg-color, rgba(255, 255, 255, 0.05));
+}
+
+/* Clan Offers */
+.clan-offers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clan-offers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.clan-offer-card {
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.clan-offer-card:active {
+  transform: scale(0.98);
+}
+
+.clan-offer-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.clan-offer-info {
+  flex: 1;
+  color: white;
+}
+
+.clan-offer-amount {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.clan-offer-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  opacity: 0.9;
+}
+
+.clan-offer-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (min-width: 600px) {
+  .clans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clan-offers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
