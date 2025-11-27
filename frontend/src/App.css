@@ -1,6 +1,61 @@
 .app {
   min-height: 100vh;
   background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+.main-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.main-header {
+  position: relative;
+  z-index: 10;
+  background: var(--bg-primary);
+  padding: 0 20px;
+}
+
+.tower-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 200px; /* Space for action island */
+}
+
+/* Dynamic Island style - Fixed Action Button */
+.action-island {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(
+    to top,
+    var(--bg-primary) 0%,
+    var(--bg-primary) 80%,
+    rgba(var(--bg-primary-rgb, 255, 255, 255), 0.95) 90%,
+    rgba(var(--bg-primary-rgb, 255, 255, 255), 0) 100%
+  );
+  padding: 0 20px 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.action-island .action-button-container {
+  padding: 10px 0 0 0;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 14px;
 }
 
 .loading-state {

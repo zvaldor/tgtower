@@ -1,0 +1,96 @@
+.bottom-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 16px 16px 0 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.bottom-sheet-handle-container {
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bottom-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--tg-theme-hint-color, #999999);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.bottom-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+}
+
+.bottom-sheet-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+.bottom-sheet-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--tg-theme-hint-color, #999999);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.bottom-sheet-close:active {
+  background: var(--tg-theme-section-bg-color, rgba(0, 0, 0, 0.05));
+}
+
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Dark theme support */
+[data-theme='dark'] .bottom-sheet {
+  background: var(--tg-theme-bg-color, #1c1c1e);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .bottom-sheet-header {
+  border-bottom-color: var(--tg-theme-section-separator-color, rgba(255, 255, 255, 0.1));
+}
+
+[data-theme='dark'] .bottom-sheet-close:active {
+  background: var(--tg-theme-section-bg-color, rgba(255, 255, 255, 0.1));
+}

@@ -44,6 +44,18 @@ export default function TowerDisplay({ tower, isCollapsing, isPremium = false, t
                     {block.telegram_first_name && (
                       <span className="block-user-name">{block.telegram_first_name}</span>
                     )}
+
+                    {/* Clan visualization */}
+                    {block.clan_id && block.clan_color_primary && (
+                      <div
+                        className="block-clan-indicator"
+                        style={{
+                          background: `linear-gradient(90deg, transparent 0%, ${block.clan_color_primary} 100%)`
+                        }}
+                      >
+                        <span className="block-clan-icon">{block.clan_icon}</span>
+                      </div>
+                    )}
                   </motion.div>
                 ))
               ) : (

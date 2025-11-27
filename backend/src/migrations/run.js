@@ -166,6 +166,76 @@ const migrations = [
        ALTER TABLE blocks ADD COLUMN user_id UUID REFERENCES users(id);
      END IF;
    END $$;`,
+
+  // Migration 16: Create clans table
+  `CREATE TABLE IF NOT EXISTS clans (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    color_primary TEXT NOT NULL,
+    color_secondary TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 17: Insert 10 predefined clans
+  `INSERT INTO clans (name, icon, color_primary, color_secondary, description)
+   VALUES
+     ('Phoenix', '🔥', '#FF6B6B', '#FF8E53', 'Rise from the ashes'),
+     ('Dragons', '🐉', '#4ECDC4', '#44A08D', 'Mighty and powerful'),
+     ('Titans', '⚡', '#FFD93D', '#F9CA24', 'Strong as thunder'),
+     ('Ninjas', '🥷', '#6C5CE7', '#A29BFE', 'Swift and silent'),
+     ('Knights', '⚔️', '#0984E3', '#74B9FF', 'Honor and valor'),
+     ('Wizards', '🧙', '#9B59B6', '#BE2EDD', 'Masters of magic'),
+     ('Samurai', '🗡️', '#E74C3C', '#C0392B', 'Way of the warrior'),
+     ('Vikings', '🛡️', '#F39C12', '#E67E22', 'Fearless raiders'),
+     ('Spartans', '🏛️', '#2C3E50', '#34495E', 'Warrior spirit'),
+     ('Guardians', '🛡️', '#27AE60', '#2ECC71', 'Protectors of all')
+   ON CONFLICT DO NOTHING;`,
+
+  // Migration 18: Add clan_id to users table
+  `DO $$
+   BEGIN
+     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='clan_id') THEN
+       ALTER TABLE users ADD COLUMN clan_id UUID REFERENCES clans(id);
+     END IF;
+   END $$;`,
+
+  // Migration 19: Add clan_join_season to users table (track when user joined clan)
+  `DO $$
+   BEGIN
+     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='clan_join_season') THEN
+       ALTER TABLE users ADD COLUMN clan_join_season INT;
+     END IF;
+   END $$;`,
+
+  // Migration 20: Add clan_id to blocks table for visualization
+  `DO $$
+   BEGIN
+     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='blocks' AND column_name='clan_id') THEN
+       ALTER TABLE blocks ADD COLUMN clan_id UUID REFERENCES clans(id);
+     END IF;
+   END $$;`,
+
+  // Migration 21: Create clan_special_offers table
+  `CREATE TABLE IF NOT EXISTS clan_special_offers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clan_id UUID REFERENCES clans(id) NOT NULL,
+    blocks_amount INT NOT NULL,
+    stars_price INT NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW()
+  );`,
+
+  // Migration 22: Insert default clan offers
+  `INSERT INTO clan_special_offers (clan_id, blocks_amount, stars_price)
+   SELECT id, 10, 75 FROM clans
+   ON CONFLICT DO NOTHING;`,
+
+  // Migration 23: Create indexes for clans
+  `CREATE INDEX IF NOT EXISTS idx_users_clan_id ON users(clan_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_blocks_clan_id ON blocks(clan_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_clan_special_offers_clan_id ON clan_special_offers(clan_id);`,
 ];
 
 async function runMigrations() {

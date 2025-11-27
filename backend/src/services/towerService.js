@@ -83,12 +83,19 @@ export async function placeBlock(userId, seasonId, paidWithStars = true) {
       [newHeight, tower.id]
     );
 
-    // Create block record
+    // Get user's clan_id
+    const userClanResult = await client.query(
+      'SELECT clan_id FROM users WHERE id = $1',
+      [userId]
+    );
+    const userClanId = userClanResult.rows[0]?.clan_id || null;
+
+    // Create block record with clan_id
     const blockResult = await client.query(
-      `INSERT INTO blocks (tower_id, user_id, block_number)
-       VALUES ($1, $2, $3)
+      `INSERT INTO blocks (tower_id, user_id, block_number, clan_id)
+       VALUES ($1, $2, $3, $4)
        RETURNING id`,
-      [tower.id, userId, newHeight]
+      [tower.id, userId, newHeight, userClanId]
     );
 
     const blockId = blockResult.rows[0].id;
@@ -551,7 +558,7 @@ export async function getPremiumLeaderboard(seasonId, limit = 100) {
 }
 
 /**
- * Get blocks for a tower with user information
+ * Get blocks for a tower with user information and clan info
  */
 export async function getTowerBlocks(towerId, limit = 20) {
   const result = await pool.query(
@@ -560,9 +567,15 @@ export async function getTowerBlocks(towerId, limit = 20) {
        b.user_id,
        u.telegram_first_name,
        u.telegram_username,
-       u.telegram_id
+       u.telegram_id,
+       b.clan_id,
+       c.name as clan_name,
+       c.icon as clan_icon,
+       c.color_primary as clan_color_primary,
+       c.color_secondary as clan_color_secondary
      FROM blocks b
      LEFT JOIN users u ON b.user_id = u.id
+     LEFT JOIN clans c ON b.clan_id = c.id
      WHERE b.tower_id = $1
      ORDER BY b.block_number DESC
      LIMIT $2`,
